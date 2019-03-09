@@ -8,7 +8,8 @@ function ret = process_dat(fn, pn)
     % Extract CSI information for each packet
     fprintf('Have CSI for %d packets\n', length(raw_data))
 
-    csi = zeros(length(raw_data), 3, 3, 30)
+    % zeros(CSI data length, antenna, antenna, subcarriers (groupped by Intel 5300))
+    csi = zeros(length(raw_data), raw_data{0}.Ntx, raw_data{0}.Nrx, 30)
     timestamp = zeros(1, length(raw_data))
     temp = []
 

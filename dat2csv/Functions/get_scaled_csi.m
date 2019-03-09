@@ -7,8 +7,8 @@ function ret = get_scaled_csi(csi_st)
     csi = csi_st.csi;
 
     % Calculate the scale factor between normalized CSI and RSSI (mW)
-    csi_sq = csi .* conj(csi);
-    csi_pwr = sum(csi_sq(:));
+    csi_sq = csi .* conj(csi); % sq = original * complex conjunction
+    csi_pwr = sum(csi_sq(:)); % sum all elements of csi_sq
     rssi_pwr = dbinv(get_total_rss(csi_st));
     %   Scale CSI -> Signal power : rssi_pwr / (mean of csi_pwr)
     scale = rssi_pwr / (csi_pwr / 30);

@@ -1,6 +1,6 @@
 addpath(genpath('./Functions/'))
 
-[File, Path] = uigetfile('*.dat','MultiSelect','on')
+[File, Path] = uigetfile('*.dat','MultiSelect','on');
 
 if isa(File, 'cell') % Multiple files selected
     for idx = 1:length(File)

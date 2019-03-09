@@ -43,8 +43,8 @@ triangle = [1 3 6];             % What perm should sum to for 1,2,3 antennas
 % Need 3 bytes -- 2 byte size field and 1 byte code
 while cur < (len - 3)
     % Read size and code
-    field_len = fread(f, 1, 'uint16', 0, 'ieee-be');
-    code = fread(f,1);
+    field_len = fread(f, 1, 'uint16', 0, 'ieee-be'); % uint16 is 2 byte size
+    code = fread(f,1); % default: uint8 is 1 byte size
     cur = cur+3;
     
     % If unhandled code, skip (seek over) the record and continue
