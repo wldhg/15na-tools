@@ -107,7 +107,7 @@ static void connector_send_all(void)
 
 	/* Loop through buffer sending messages */
 	for (i = start; i != end; i = ((i+1) % CN_BUF_SIZE)) {
-		cn_netlink_send(cn_msg_buf[i], 0, GFP_ATOMIC);
+		cn_netlink_send(cn_msg_buf[i], 0, 0, GFP_ATOMIC);
 		kfree(cn_msg_buf[i]);
 	}
 
