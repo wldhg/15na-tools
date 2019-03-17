@@ -1333,12 +1333,12 @@ static void iwl_req_fw_callback(const struct firmware *ucode_raw, void *context)
 
 	if (ucode_raw->size != 336252) {
 		IWL_ERR(drv,
-			"Firmware size does not match iwlwifi-5000-2.ucode.sigcomm2010. The UW 802.11n CSI Tool will not work.");
+			"Firmware size does not match iwlwifi-5000-2.ucode.sigcomm2010. The UW 802.11n CSI Tool will not work.\n");
 	} else {
-		IWL_INFO(drv, "Firmware with CSI Tool loaded.");
+		IWL_INFO(drv, "Firmware with CSI Tool loaded.\n");
 	}
 
-	IWL_INFO(drv, "loaded firmware version %s", drv->fw.fw_version);
+	IWL_INFO(drv, "loaded firmware version %s\n", drv->fw.fw_version);
 
 	/*
 	 * In mvm uCode there is no difference between data and instructions
