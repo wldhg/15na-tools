@@ -354,7 +354,7 @@ int iwlagn_tx_skb(struct iwl_priv *priv,
 		}
 	}
 
-	if (info->control.sta == NULL && is_monitor_ether_addr(hdr->addr1))
+	if (sta == NULL && is_monitor_ether_addr(hdr->addr1))
 		sta_id = IWLAGN_MONITOR_ID;
 
 	if (sta)
@@ -396,7 +396,7 @@ int iwlagn_tx_skb(struct iwl_priv *priv,
 
 	/* TODO need this for burst mode later on */
 	iwlagn_tx_cmd_build_basic(priv, skb, tx_cmd, info, hdr, sta_id);
-	
+
 	/* If packet is to the monitor address, use the monitor rate; or
 	 * if packet is to the broadcast address, use the broadcast rate
 	 */
