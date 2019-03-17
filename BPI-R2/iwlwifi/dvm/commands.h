@@ -1116,7 +1116,7 @@ struct iwlagn_non_cfg_phy {
  */
 struct iwl_rx_phy_res {
 	u8 non_cfg_phy_cnt;     /* non configurable DSP phy data byte count */
-	u8 cfg_phy_cnt;		/* configurable DSP phy data byte count */
+	u8 cfg_phy_cnt;		/* configurable DSP phy data element count */
 	u8 stat_id;		/* configurable DSP phy data set ID */
 	u8 reserved1;
 	__le64 timestamp;	/* TSF at on air rise */
@@ -1127,6 +1127,7 @@ struct iwl_rx_phy_res {
 	__le32 rate_n_flags;	/* RATE_MCS_* */
 	__le16 byte_count;	/* frame's byte-count */
 	__le16 frame_time;	/* frame's time on the air */
+	u8 cfg_phy_buf[0];
 } __packed;
 
 struct iwl_rx_mpdu_res_start {
