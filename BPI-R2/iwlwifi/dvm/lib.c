@@ -40,7 +40,7 @@
 #include "dev.h"
 #include "agn.h"
 
-int iwlagn_bfee_notif(struct iwl_priv *priv, struct iwl_rx_cmd_buffer *rxb)
+void iwlagn_bfee_notif(struct iwl_priv *priv, struct iwl_rx_cmd_buffer *rxb)
 {
 	/*
 	 * Just print a notification that there was a notification passed up
@@ -92,6 +92,25 @@ int iwlagn_bfee_notif(struct iwl_priv *priv, struct iwl_rx_cmd_buffer *rxb)
 		/* Increment counter */
 		bfee_count++;
 		bfee_notif->bfee_count = cpu_to_le16(bfee_count);
+	}
+
+	/* Log the bytes to a file */
+	if (priv->connector_log & IWL_CONN_BFEE_NOTIF_MSK)
+		connector_send_msg((void *)bfee_notif,
+			len + sizeof(struct iwl_bfee_notif),
+			IWL_CONN_BFEE_NOTIF);
+
+	/* Now print out that we got a notification, and the size of it */
+	Nrx = bfee_notif->Nrx;
+	Ntx = bfee_notif->Ntx;
+	/*
+	 * Each subcarrier uses Ntx * Nrx * 2 * 8 bits for matrix
+	 * (2 signed 8-bit I/Q vals) plus 3 bits for SNR. I think the hardware
+	 * always gives 0 for these 3 bits. See 802.11n spec section 7.3.1.28.
+	 */
+	IWL_DEBUG_RX(priv, "BFEE NOTIFICATION, Nrx=%u Ntx=%u "
+			"len=%u calc_len=%u\n",
+			Nrx, Ntx, len, (30*(3+2*Nrx*Ntx*8)+7)/8);
 }
 
 int iwlagn_hw_valid_rtc_data_addr(u32 addr)
