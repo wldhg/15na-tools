@@ -39,6 +39,7 @@
 
 #include "dev.h"
 #include "agn.h"
+#include "connector.h"
 
 void iwlagn_bfee_notif(struct iwl_priv *priv, struct iwl_rx_cmd_buffer *rxb)
 {
