@@ -218,6 +218,7 @@ int iwlagn_tx_agg_flush(struct iwl_priv *priv, struct ieee80211_vif *vif,
 void iwlagn_rx_reply_compressed_ba(struct iwl_priv *priv,
 				   struct iwl_rx_cmd_buffer *rxb);
 void iwlagn_rx_reply_tx(struct iwl_priv *priv, struct iwl_rx_cmd_buffer *rxb);
+int iwlagn_bfee_notif(struct iwl_priv *priv, struct iwl_rx_cmd_buffer *rxb);
 
 static inline u32 iwl_tx_status_to_mac80211(u32 status)
 {
@@ -243,6 +244,14 @@ static inline bool iwl_is_tx_success(u32 status)
 }
 
 u8 iwl_toggle_tx_ant(struct iwl_priv *priv, u8 ant_idx, u8 valid);
+
+extern const u8 iwl_monitor_addr[ETH_ALEN];
+static inline bool is_monitor_ether_addr(const u8 *addr)
+{
+	if (WARN_ON(addr == NULL))
+		return 0;
+	return !memcmp(addr, iwl_monitor_addr, ETH_ALEN);
+}
 
 /* scan */
 void iwlagn_post_scan(struct iwl_priv *priv);

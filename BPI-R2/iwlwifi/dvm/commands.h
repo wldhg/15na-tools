@@ -72,11 +72,11 @@
 #include <linux/ieee80211.h>
 #include <linux/types.h>
 
-
-enum {
+enum
+{
 	REPLY_ALIVE = 0x1,
 	REPLY_ERROR = 0x2,
-	REPLY_ECHO = 0x3,		/* test command */
+	REPLY_ECHO = 0x3, /* test command */
 
 	/* RXON and QOS commands */
 	REPLY_RXON = 0x10,
@@ -87,7 +87,7 @@ enum {
 	/* Multi-Station support */
 	REPLY_ADD_STA = 0x18,
 	REPLY_REMOVE_STA = 0x19,
-	REPLY_REMOVE_ALL_STA = 0x1a,	/* not used */
+	REPLY_REMOVE_ALL_STA = 0x1a, /* not used */
 	REPLY_TXFIFO_FLUSH = 0x1e,
 
 	/* Security */
@@ -110,7 +110,7 @@ enum {
 	CALIBRATION_COMPLETE_NOTIFICATION = 0x67,
 
 	/* 802.11h related */
-	REPLY_QUIET_CMD = 0x71,		/* not used */
+	REPLY_QUIET_CMD = 0x71, /* not used */
 	REPLY_CHANNEL_SWITCH = 0x72,
 	CHANNEL_SWITCH_NOTIFICATION = 0x73,
 	REPLY_SPECTRUM_MEASUREMENT_CMD = 0x74,
@@ -131,15 +131,15 @@ enum {
 	/* IBSS/AP commands */
 	BEACON_NOTIFICATION = 0x90,
 	REPLY_TX_BEACON = 0x91,
-	WHO_IS_AWAKE_NOTIFICATION = 0x94,	/* not used */
+	WHO_IS_AWAKE_NOTIFICATION = 0x94, /* not used */
 
 	/* Miscellaneous commands */
 	REPLY_TX_POWER_DBM_CMD = 0x95,
-	QUIET_NOTIFICATION = 0x96,		/* not used */
+	QUIET_NOTIFICATION = 0x96, /* not used */
 	REPLY_TX_PWR_TABLE_CMD = 0x97,
-	REPLY_TX_POWER_DBM_CMD_V1 = 0x98,	/* old version of API */
+	REPLY_TX_POWER_DBM_CMD_V1 = 0x98, /* old version of API */
 	TX_ANT_CONFIGURATION_CMD = 0x98,
-	MEASURE_ABORT_NOTIFICATION = 0x99,	/* not used */
+	MEASURE_ABORT_NOTIFICATION = 0x99, /* not used */
 
 	/* Bluetooth device coexistence config command */
 	REPLY_BT_CONFIG = 0x9b,
@@ -158,6 +158,10 @@ enum {
 	REPLY_CT_KILL_CONFIG_CMD = 0xa4,
 	SENSITIVITY_CMD = 0xa8,
 	REPLY_PHY_CALIBRATION_CMD = 0xb0,
+
+	/* Beamforming */
+	REPLY_BFEE_NOTIFICATION = 0xbb,
+
 	REPLY_RX_PHY_CMD = 0xc0,
 	REPLY_RX_MPDU_CMD = 0xc1,
 	REPLY_RX = 0xc3,
@@ -170,11 +174,11 @@ enum {
 
 	/* PAN commands */
 	REPLY_WIPAN_PARAMS = 0xb2,
-	REPLY_WIPAN_RXON = 0xb3,	/* use REPLY_RXON structure */
-	REPLY_WIPAN_RXON_TIMING = 0xb4,	/* use REPLY_RXON_TIMING structure */
+	REPLY_WIPAN_RXON = 0xb3,				/* use REPLY_RXON structure */
+	REPLY_WIPAN_RXON_TIMING = 0xb4, /* use REPLY_RXON_TIMING structure */
 	REPLY_WIPAN_RXON_ASSOC = 0xb6,	/* use REPLY_RXON_ASSOC structure */
-	REPLY_WIPAN_QOS_PARAM = 0xb7,	/* use REPLY_QOS_PARAM structure */
-	REPLY_WIPAN_WEPKEY = 0xb8,	/* use REPLY_WEPKEY structure */
+	REPLY_WIPAN_QOS_PARAM = 0xb7,		/* use REPLY_QOS_PARAM structure */
+	REPLY_WIPAN_WEPKEY = 0xb8,			/* use REPLY_WEPKEY structure */
 	REPLY_WIPAN_P2P_CHANNEL_SWITCH = 0xb9,
 	REPLY_WIPAN_NOA_NOTIFICATION = 0xbc,
 	REPLY_WIPAN_DEACTIVATION_COMPLETE = 0xbd,
@@ -186,6 +190,9 @@ enum {
 	REPLY_WOWLAN_KEK_KCK_MATERIAL = 0xe4,
 	REPLY_WOWLAN_GET_STATUS = 0xe5,
 	REPLY_D3_CONFIG = 0xd3,
+
+	/* Gets metadata for Beamforming */
+	DSP_DEBUG_CMD = 0xf1,
 
 	REPLY_MAX = 0xff
 };
@@ -573,6 +580,10 @@ enum {
 #define RXON_FLG_CHANNEL_MODE_PURE_40	cpu_to_le32(CHANNEL_MODE_PURE_40 << RXON_FLG_CHANNEL_MODE_POS)
 #define RXON_FLG_CHANNEL_MODE_MIXED	cpu_to_le32(CHANNEL_MODE_MIXED << RXON_FLG_CHANNEL_MODE_POS)
 
+/* Beamforming */
+#define RXON_FLG_BF_ENABLE_POS			(29)
+#define RXON_FLG_BF_ENABLE_MSK			cpu_to_le32(0x1<<29)
+
 /* CTS to self (if spec allows) flag */
 #define RXON_FLG_SELF_CTS_EN			cpu_to_le32(0x1<<30)
 
@@ -784,6 +795,7 @@ struct iwl_qosparam_cmd {
 #define	IWL_AP_ID		0
 #define	IWL_AP_ID_PAN		1
 #define	IWL_STA_ID		2
+#define IWLAGN_MONITOR_ID 13
 #define IWLAGN_PAN_BCAST_ID	14
 #define IWLAGN_BROADCAST_ID	15
 #define	IWLAGN_STATION_COUNT	16
@@ -1091,6 +1103,7 @@ struct iwl_wep_cmd {
 #define IWLAGN_OFDM_RSSI_INBAND_C_BITMSK 0x00ff
 #define IWLAGN_OFDM_RSSI_ALLBAND_C_BITMSK 0xff00
 #define IWLAGN_OFDM_RSSI_C_BIT_POS 0
+#define IWLAGN_MAX_CFG_PHY_CNT 20
 
 struct iwlagn_non_cfg_phy {
 	__le32 non_cfg_phy[IWLAGN_RX_RES_PHY_CNT];  /* up to 8 phy entries */
@@ -3887,6 +3900,62 @@ struct iwlagn_wowlan_status {
 	union iwlagn_all_tsc_rsc tsc_rsc;
 	__le16 reserved3;
 } __packed;
+
+/******************************************************************************
+ * (14)
+ * Beamforming commands
+ *
+ *****************************************************************************/
+
+/*
+ * REPLY_BFEE_NOTIFICATION = 0xbb
+ *
+ */
+struct iwl_bfee_notif {
+	__le32 timestamp_low;
+	__le16 bfee_count;
+	__le16 reserved1;
+	u8 Nrx, Ntx;
+	u8 rssiA, rssiB, rssiC;
+	s8 noise;
+	u8 agc, antenna_sel;
+	__le16 len;
+	__le16 fake_rate_n_flags;
+	u8 payload[0];
+} __attribute__ ((packed));
+
+/******************************************************************************
+ * (15)
+ * DSP debug interface
+ *
+ *****************************************************************************/
+
+/* DSP debugging */
+#define DSP_DEBUG_CCK_MSK		(0x1)
+#define DSP_DEBUG_OFDM_MSK		(0x0)
+/* MIB values */
+#define OFDM_RX_ANT_OUT			0x4302
+
+/*
+ * DSP_DEBUG_CMD = 0xf1
+ *
+ */
+struct iwl5000_dsp_debug {
+	u8 mib_cnt;
+	u8 flags;
+	u8 stat_id;
+	u8 reserved;
+	u16 mib_indices[0];
+} __attribute__ ((packed));
+
+/* For rotate rates */
+#define ROTATE_SISO	1
+#define ROTATE_MIMO2	2
+#define ROTATE_MIMO3	4
+#define ROTATE_TX_SEL	8
+#define ROTATE_HT40	16
+#define ROTATE_SGI	32
+#define ROTATE_SKIP	64
 
 /*
  * REPLY_WIPAN_PARAMS = 0xb2 (Commands and Notification)

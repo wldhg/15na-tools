@@ -39,6 +39,7 @@
 #include "dev.h"
 #include "calib.h"
 #include "agn.h"
+#include "connector.h"
 
 /******************************************************************************
  *
@@ -282,10 +283,17 @@ static void iwlagn_rx_calc_noise(struct iwl_priv *priv)
 	}
 
 	/* Average among active antennas */
-	if (num_active_rx)
+	if (num_active_rx) {
 		last_rx_noise = (total_silence / num_active_rx) - 107;
-	else
+		if (priv->connector_log & IWL_CONN_NOISE_MSK)
+			connector_send_msg((void *)&last_rx_noise,
+					sizeof(last_rx_noise), IWL_CONN_NOISE);
+	} else
 		last_rx_noise = IWL_NOISE_MEAS_NOT_AVAILABLE;
+	priv->last_rx_noise = last_rx_noise;
+	priv->last_rx_noiseA = bcn_silence_a;
+	priv->last_rx_noiseB = bcn_silence_b;
+	priv->last_rx_noiseC = bcn_silence_c;
 
 	IWL_DEBUG_CALIB(priv, "inband silence a %u, b %u, c %u, dBm %d\n",
 			bcn_silence_a, bcn_silence_b, bcn_silence_c,
@@ -560,11 +568,14 @@ static void iwlagn_rx_reply_rx_phy(struct iwl_priv *priv,
 				   struct iwl_rx_cmd_buffer *rxb)
 {
 	struct iwl_rx_packet *pkt = rxb_addr(rxb);
+	struct iwl_rx_phy_res *rx_phy_res = (void *)pkt->data;
 
 	priv->last_phy_res_valid = true;
 	priv->ampdu_ref++;
 	memcpy(&priv->last_phy_res, pkt->data,
-	       sizeof(struct iwl_rx_phy_res));
+				 sizeof(struct iwl_rx_phy_res));
+	memcpy(&priv->last_cfg_phy_buf, rx_phy_res->cfg_phy_buf,
+				 rx_phy_res->cfg_phy_cnt * sizeof(u32));
 }
 
 /*
@@ -809,15 +820,17 @@ static void iwlagn_rx_reply_rx(struct iwl_priv *priv,
 	}
 	phy_res = &priv->last_phy_res;
 	amsdu = (struct iwl_rx_mpdu_res_start *)pkt->data;
-	header = (struct ieee80211_hdr *)(pkt->data + sizeof(*amsdu));
+	header = (struct ieee80211_hdr *)(pkt->data + sizeof(*amsdu) + phy_res->cfg_phy_cnt * sizeof(u32));
 	len = le16_to_cpu(amsdu->byte_count);
-	rx_pkt_status = *(__le32 *)(pkt->data + sizeof(*amsdu) + len);
+	rx_pkt_status = *(__le32 *)(pkt->data + sizeof(*amsdu) + phy_res->cfg_phy_cnt * sizeof(u32) + len);
 	ampdu_status = iwlagn_translate_rx_status(priv,
 						  le32_to_cpu(rx_pkt_status));
+	if (priv->connector_log & IWL_CONN_RX_MPDU_MSK)
+		connector_send_msg((void *)header, len, IWL_CONN_RX_MPDU);
 
-	if ((unlikely(phy_res->cfg_phy_cnt > 20))) {
+	if ((unlikely(phy_res->cfg_phy_cnt > IWLAGN_MAX_CFG_PHY_CNT))) {
 		IWL_DEBUG_DROP(priv, "dsp size out of range [0,20]: %d\n",
-				phy_res->cfg_phy_cnt);
+				IWLAGN_MAX_CFG_PHY_CNT, phy_res->cfg_phy_cnt);
 		return;
 	}
 
@@ -987,6 +1000,9 @@ void iwl_setup_rx_handlers(struct iwl_priv *priv)
 	/* block ack */
 	handlers[REPLY_COMPRESSED_BA]		=
 		iwlagn_rx_reply_compressed_ba;
+
+	/* Beamforming */
+	handlers[REPLY_BFEE_NOTIFICATION] = iwlagn_bfee_notif;
 
 	priv->rx_handlers[REPLY_TX] = iwlagn_rx_reply_tx;
 

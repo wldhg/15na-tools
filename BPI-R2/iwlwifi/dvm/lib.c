@@ -40,6 +40,60 @@
 #include "dev.h"
 #include "agn.h"
 
+int iwlagn_bfee_notif(struct iwl_priv *priv, struct iwl_rx_cmd_buffer *rxb)
+{
+	/*
+	 * Just print a notification that there was a notification passed up
+	 * from SVD
+	 */
+	struct iwl_rx_packet *pkt = rxb_addr(rxb);
+	struct iwl_bfee_notif *bfee_notif = (void *)pkt->data;
+	u8 Nrx, Ntx;
+	u16 len = le16_to_cpu(bfee_notif->len);
+	struct iwl_rx_phy_res *phy;
+	u32 *non_cfg_buf, *cfg_buf;
+	static u16 bfee_count;
+
+	if (priv->last_phy_res_valid) {
+		phy = &priv->last_phy_res;
+		non_cfg_buf = (u32 *)phy->non_cfg_phy_buf;
+		bfee_notif->timestamp_low =
+			cpu_to_le32(__le64_to_cpu(phy->timestamp));
+		bfee_notif->rssiA =
+			(non_cfg_buf[IWLAGN_RX_RES_RSSI_AB_IDX] &
+			 IWLAGN_OFDM_RSSI_INBAND_A_BITMSK) >>
+			IWLAGN_OFDM_RSSI_A_BIT_POS;
+		bfee_notif->rssiB =
+			(non_cfg_buf[IWLAGN_RX_RES_RSSI_AB_IDX] &
+			 IWLAGN_OFDM_RSSI_INBAND_B_BITMSK) >>
+			IWLAGN_OFDM_RSSI_B_BIT_POS;
+		bfee_notif->rssiC =
+			(non_cfg_buf[IWLAGN_RX_RES_RSSI_C_IDX] &
+			 IWLAGN_OFDM_RSSI_INBAND_C_BITMSK) >>
+			IWLAGN_OFDM_RSSI_C_BIT_POS;
+		bfee_notif->noise = priv->last_rx_noise;
+		bfee_notif->agc =
+			(non_cfg_buf[IWLAGN_RX_RES_AGC_IDX] &
+			 IWLAGN_OFDM_AGC_MSK) >> IWLAGN_OFDM_AGC_BIT_POS;
+		if (phy->cfg_phy_cnt > 0) {
+			cfg_buf = (u32 *)&priv->last_cfg_phy_buf;
+			bfee_notif->antenna_sel = cfg_buf[0];
+		}
+		/* Everything but antennas is in bottom 14 bits */
+		bfee_notif->fake_rate_n_flags =
+			cpu_to_le16(__le32_to_cpu(phy->rate_n_flags) & 0x3fff);
+		IWL_INFO(priv, "rssis: %u %u %u noise: %d agc: %u "
+				"antenna_sel: %02x fake_rate_n_flags=0x%x\n",
+				bfee_notif->rssiA, bfee_notif->rssiB,
+				bfee_notif->rssiC, bfee_notif->noise,
+				bfee_notif->agc, bfee_notif->antenna_sel,
+				bfee_notif->fake_rate_n_flags);
+
+		/* Increment counter */
+		bfee_count++;
+		bfee_notif->bfee_count = cpu_to_le16(bfee_count);
+}
+
 int iwlagn_hw_valid_rtc_data_addr(u32 addr)
 {
 	return (addr >= IWLAGN_RTC_DATA_LOWER_BOUND) &&
