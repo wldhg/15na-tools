@@ -7,6 +7,7 @@ iwldvm-objs		+= lib.o calib.o tt.o sta.o rx.o
 iwldvm-objs		+= power.o
 iwldvm-objs		+= scan.o
 iwldvm-objs		+= rxon.o devices.o
+iwldvm-objs		+= connector.o
 
 iwldvm-$(CONFIG_IWLWIFI_LEDS) += led.o
 iwldvm-$(CONFIG_IWLWIFI_DEBUGFS) += debugfs.o
