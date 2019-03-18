@@ -153,14 +153,14 @@ int iwlagn_mac_setup_register(struct iwl_priv *priv,
 	ieee80211_hw_set(hw, SUPPORT_FAST_XMIT);
 	ieee80211_hw_set(hw, WANT_MONITOR_VIF);
 
-	// NOTE: Addition Point
-	if (priv->trans->max_skb_frags)
-		hw->netdev_features = NETIF_F_HIGHDMA | NETIF_F_SG;
+	// NOTE: Addition Point -> Finally unused
+	//if (priv->trans->max_skb_frags)
+	//  hw->netdev_features = NETIF_F_HIGHDMA | NETIF_F_SG;
 
 	hw->offchannel_tx_hw_queue = IWL_AUX_QUEUE;
 
-	// NOTE: Addition Point
-	hw->radiotap_mcs_details |= IEEE80211_RADIOTAP_MCS_HAVE_FMT;
+	// NOTE: Addition Point -> Finally unused
+	//hw->radiotap_mcs_details |= IEEE80211_RADIOTAP_MCS_HAVE_FMT;
 
 	/*
 	 * Including the following line will crash some AP's.  This
@@ -169,15 +169,20 @@ int iwlagn_mac_setup_register(struct iwl_priv *priv,
 	hw->max_tx_aggregation_subframes = LINK_QUAL_AGG_FRAME_LIMIT_DEF;
 	 */
 
-	if (priv->nvm_data->sku_cap_11n_enable)
-		hw->wiphy->features |= NL80211_FEATURE_DYNAMIC_SMPS |
-				       NL80211_FEATURE_STATIC_SMPS;
+	// NOTE: New Code
+	//if (priv->nvm_data->sku_cap_11n_enable)
+	//	hw->wiphy->features |= NL80211_FEATURE_DYNAMIC_SMPS |
+	//			       NL80211_FEATURE_STATIC_SMPS;
+	// NOTE: Only constants are changed
+	if (priv->hw_params.sku & EEPROM_SKU_CAP_11N_ENABLE)
+		hw->flags |= NL80211_FEATURE_DYNAMIC_SMPS |
+					 NL80211_FEATURE_STATIC_SMPS;
 
 #ifndef CONFIG_IWLWIFI_EXPERIMENTAL_MFP
 	/* enable 11w if the uCode advertise */
 	if (capa->flags & IWL_UCODE_TLV_FLAGS_MFP)
 #endif /* !CONFIG_IWLWIFI_EXPERIMENTAL_MFP */
-		hw->flags |= IEEE80211_HW_MFP_CAPABLE;
+		ieee80211_hw_set(hw, MFP_CAPABLE);
 
 	hw->sta_data_size = sizeof(struct iwl_station_priv);
 	hw->vif_data_size = sizeof(struct iwl_vif_priv);
