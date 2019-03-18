@@ -755,7 +755,7 @@ struct iwl_priv {
 
 	struct iwl_notif_wait_data notif_wait;
 
-	struct ieee80211_supported_band bands[IEEE80211_NUM_BANDS];
+	struct ieee80211_supported_band bands[NUM_NL80211_BANDS];
 
 	/* spectrum measurement report caching */
 	struct iwl_spectrum_notification measure_report;

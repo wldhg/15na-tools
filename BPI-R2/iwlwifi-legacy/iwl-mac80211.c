@@ -1141,28 +1141,30 @@ int iwlagn_mac_cancel_remain_on_channel(struct ieee80211_hw *hw)
 	return 0;
 }
 
-void iwlagn_mac_rssi_callback(struct ieee80211_hw *hw,
-			      enum ieee80211_rssi_event rssi_event)
+void iwlagn_mac_event_callback(struct ieee80211_hw *hw,
+       struct ieee80211_vif *vif,
+       const struct ieee80211_event *event)
 {
 	struct iwl_priv *priv = IWL_MAC80211_GET_DVM(hw);
 
-	IWL_DEBUG_MAC80211(priv, "enter\n");
-	mutex_lock(&priv->mutex);
+	if (event->type != RSSI_EVENT)
+		return;
 
-	if (priv->cfg->bt_params &&
-			priv->cfg->bt_params->advanced_bt_coexist) {
-		if (rssi_event == RSSI_EVENT_LOW)
+	IWL_DEBUG_MAC80211(priv, "enter\n");
+
+	if (priv->lib->bt_params &&
+	    priv->lib->bt_params->advanced_bt_coexist) {
+		if (event->u.rssi.data == RSSI_EVENT_LOW)
 			priv->bt_enable_pspoll = true;
-		else if (rssi_event == RSSI_EVENT_HIGH)
+		else if (event->u.rssi.data == RSSI_EVENT_HIGH)
 			priv->bt_enable_pspoll = false;
 
-		iwlagn_send_advance_bt_config(priv);
+		queue_work(priv->workqueue, &priv->bt_runtime_config);
 	} else {
 		IWL_DEBUG_MAC80211(priv, "Advanced BT coex disabled,"
 				"ignoring RSSI callback\n");
 	}
 
-	mutex_unlock(&priv->mutex);
 	IWL_DEBUG_MAC80211(priv, "leave\n");
 }
 
@@ -1616,7 +1618,7 @@ struct ieee80211_ops iwlagn_hw_ops = {
 	.tx_last_beacon = iwlagn_mac_tx_last_beacon,
 	.remain_on_channel = iwlagn_mac_remain_on_channel,
 	.cancel_remain_on_channel = iwlagn_mac_cancel_remain_on_channel,
-	.rssi_callback = iwlagn_mac_rssi_callback,
+	.event_callback = iwlagn_mac_event_callback,
 	CFG80211_TESTMODE_CMD(iwlagn_mac_testmode_cmd)
 	CFG80211_TESTMODE_DUMP(iwlagn_mac_testmode_dump)
 	.set_tim = iwlagn_mac_set_tim,
