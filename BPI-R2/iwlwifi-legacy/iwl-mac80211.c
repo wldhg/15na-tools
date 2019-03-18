@@ -169,18 +169,22 @@ int iwlagn_mac_setup_register(struct iwl_priv *priv,
 	hw->max_tx_aggregation_subframes = LINK_QUAL_AGG_FRAME_LIMIT_DEF;
 	 */
 
-	// NOTE: New Code
+	// NOTE: New Code -> Failed
 	//if (priv->nvm_data->sku_cap_11n_enable)
 	//	hw->wiphy->features |= NL80211_FEATURE_DYNAMIC_SMPS |
 	//			       NL80211_FEATURE_STATIC_SMPS;
-	// NOTE: Only constants are changed
+	// NOTE: Only constants are changed -> Failed
+	//if (priv->hw_params.sku & EEPROM_SKU_CAP_11N_ENABLE)
+	//	hw->flags |= NL80211_FEATURE_DYNAMIC_SMPS |
+	//				 NL80211_FEATURE_STATIC_SMPS;
+	// NOTE: Then is changed
 	if (priv->hw_params.sku & EEPROM_SKU_CAP_11N_ENABLE)
-		hw->flags |= NL80211_FEATURE_DYNAMIC_SMPS |
-					 NL80211_FEATURE_STATIC_SMPS;
+		hw->wiphy->features |= NL80211_FEATURE_DYNAMIC_SMPS |
+				       NL80211_FEATURE_STATIC_SMPS;
 
 #ifndef CONFIG_IWLWIFI_EXPERIMENTAL_MFP
-	/* enable 11w if the uCode advertise */
-	if (capa->flags & IWL_UCODE_TLV_FLAGS_MFP)
+		/* enable 11w if the uCode advertise */
+		if (capa->flags & IWL_UCODE_TLV_FLAGS_MFP)
 #endif /* !CONFIG_IWLWIFI_EXPERIMENTAL_MFP */
 		ieee80211_hw_set(hw, MFP_CAPABLE);
 
