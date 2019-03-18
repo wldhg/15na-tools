@@ -106,7 +106,7 @@ struct iwl_channel_info {
 
 	u8 group_index;	  /* 0-4, maps channel to group1/2/3/4/5 */
 	u8 band_index;	  /* 0-4, maps channel to band1/2/3/4/5 */
-	enum ieee80211_band band;
+	enum nl80211_band band;
 
 	/* HT40 channel info */
 	s8 ht40_max_power_avg;	/* (dBm) regul. eeprom, normal Tx, any rate */
@@ -744,7 +744,7 @@ struct iwl_priv {
 
 	struct iwl_hw_params hw_params;
 
-	enum ieee80211_band band;
+	enum nl80211_band band;
 	u8 valid_contexts;
 
 	void (*pre_rx_handler)(struct iwl_priv *priv,
@@ -804,7 +804,7 @@ struct iwl_priv {
 	unsigned long scan_start;
 	unsigned long scan_start_tsf;
 	void *scan_cmd;
-	enum ieee80211_band scan_band;
+	enum nl80211_band scan_band;
 	struct cfg80211_scan_request *scan_request;
 	struct ieee80211_vif *scan_vif;
 	enum iwl_scan_type scan_type;
@@ -1065,12 +1065,12 @@ static inline int is_channel_radar(const struct iwl_channel_info *ch_info)
 
 static inline u8 is_channel_a_band(const struct iwl_channel_info *ch_info)
 {
-	return ch_info->band == IEEE80211_BAND_5GHZ;
+	return ch_info->band == NL80211_BAND_5GHZ;
 }
 
 static inline u8 is_channel_bg_band(const struct iwl_channel_info *ch_info)
 {
-	return ch_info->band == IEEE80211_BAND_2GHZ;
+	return ch_info->band == NL80211_BAND_2GHZ;
 }
 
 static inline int is_channel_passive(const struct iwl_channel_info *ch)

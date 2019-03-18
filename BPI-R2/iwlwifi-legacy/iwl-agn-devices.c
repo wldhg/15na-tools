@@ -170,7 +170,7 @@ static const struct iwl_sensitivity_ranges iwl1000_sensitivity = {
 
 static void iwl1000_hw_set_hw_params(struct iwl_priv *priv)
 {
-	priv->hw_params.ht40_channel =  BIT(IEEE80211_BAND_2GHZ);
+	priv->hw_params.ht40_channel =  BIT(NL80211_BAND_2GHZ);
 
 	priv->hw_params.tx_chains_num =
 		num_of_ant(priv->hw_params.valid_tx_ant);
@@ -251,7 +251,7 @@ static const struct iwl_sensitivity_ranges iwl2000_sensitivity = {
 
 static void iwl2000_hw_set_hw_params(struct iwl_priv *priv)
 {
-	priv->hw_params.ht40_channel =  BIT(IEEE80211_BAND_2GHZ);
+	priv->hw_params.ht40_channel =  BIT(NL80211_BAND_2GHZ);
 
 	priv->hw_params.tx_chains_num =
 		num_of_ant(priv->hw_params.valid_tx_ant);
@@ -404,8 +404,8 @@ static void iwl5000_set_ct_threshold(struct iwl_priv *priv)
 
 static void iwl5000_hw_set_hw_params(struct iwl_priv *priv)
 {
-	priv->hw_params.ht40_channel =  BIT(IEEE80211_BAND_2GHZ) |
-					BIT(IEEE80211_BAND_5GHZ);
+	priv->hw_params.ht40_channel =  BIT(NL80211_BAND_2GHZ) |
+					BIT(NL80211_BAND_5GHZ);
 
 	priv->hw_params.tx_chains_num =
 		num_of_ant(priv->hw_params.valid_tx_ant);
@@ -420,8 +420,8 @@ static void iwl5000_hw_set_hw_params(struct iwl_priv *priv)
 
 static void iwl5150_hw_set_hw_params(struct iwl_priv *priv)
 {
-	priv->hw_params.ht40_channel =  BIT(IEEE80211_BAND_2GHZ) |
-					BIT(IEEE80211_BAND_5GHZ);
+	priv->hw_params.ht40_channel =  BIT(NL80211_BAND_2GHZ) |
+					BIT(NL80211_BAND_5GHZ);
 
 	priv->hw_params.tx_chains_num =
 		num_of_ant(priv->hw_params.valid_tx_ant);
@@ -469,7 +469,7 @@ static int iwl5000_hw_channel_switch(struct iwl_priv *priv,
 		.data = { &cmd, },
 	};
 
-	cmd.band = priv->band == IEEE80211_BAND_2GHZ;
+	cmd.band = priv->band == NL80211_BAND_2GHZ;
 	ch = ch_switch->channel->hw_value;
 	IWL_DEBUG_11H(priv, "channel switch from %d to %d\n",
 		      ctx->active.channel, ch);
@@ -627,8 +627,8 @@ static const struct iwl_sensitivity_ranges iwl6000_sensitivity = {
 
 static void iwl6000_hw_set_hw_params(struct iwl_priv *priv)
 {
-	priv->hw_params.ht40_channel =  BIT(IEEE80211_BAND_2GHZ) |
-					BIT(IEEE80211_BAND_5GHZ);
+	priv->hw_params.ht40_channel =  BIT(NL80211_BAND_2GHZ) |
+					BIT(NL80211_BAND_5GHZ);
 
 	priv->hw_params.tx_chains_num =
 		num_of_ant(priv->hw_params.valid_tx_ant);
@@ -668,7 +668,7 @@ static int iwl6000_hw_channel_switch(struct iwl_priv *priv,
 		.data = { &cmd, },
 	};
 
-	cmd.band = priv->band == IEEE80211_BAND_2GHZ;
+	cmd.band = priv->band == NL80211_BAND_2GHZ;
 	ch = ch_switch->channel->hw_value;
 	IWL_DEBUG_11H(priv, "channel switch from %u to %u\n",
 		      ctx->active.channel, ch);

@@ -185,7 +185,7 @@ int iwlagn_send_beacon_cmd(struct iwl_priv *priv)
 	rate_flags = iwl_ant_idx_to_flags(priv->mgmt_tx_ant);
 
 	/* In mac80211, rates for 5 GHz start at 0 */
-	if (info->band == IEEE80211_BAND_5GHZ)
+	if (info->band == NL80211_BAND_5GHZ)
 		rate += IWL_FIRST_OFDM_RATE;
 	else if (rate >= IWL_FIRST_CCK_RATE && rate <= IWL_LAST_CCK_RATE)
 		rate_flags |= RATE_MCS_CCK_MSK;
@@ -1150,7 +1150,7 @@ static void iwl_init_hw_rates(struct ieee80211_rate *rates)
 #define MAX_BIT_RATE_20_MHZ 72 /* Mbps */
 static void iwl_init_ht_hw_capab(const struct iwl_priv *priv,
 			      struct ieee80211_sta_ht_cap *ht_info,
-			      enum ieee80211_band band)
+			      enum nl80211_band band)
 {
 	u16 max_bit_rate = 0;
 	u8 rx_chains_num = priv->hw_params.rx_chains_num;
@@ -1212,8 +1212,8 @@ static int iwl_init_geos(struct iwl_priv *priv)
 	int i = 0;
 	s8 max_tx_power = IWLAGN_TX_POWER_TARGET_POWER_MIN;
 
-	if (priv->bands[IEEE80211_BAND_2GHZ].n_bitrates ||
-	    priv->bands[IEEE80211_BAND_5GHZ].n_bitrates) {
+	if (priv->bands[NL80211_BAND_2GHZ].n_bitrates ||
+	    priv->bands[NL80211_BAND_5GHZ].n_bitrates) {
 		IWL_DEBUG_INFO(priv, "Geography modes already initialized.\n");
 		set_bit(STATUS_GEO_CONFIGURED, &priv->status);
 		return 0;
@@ -1232,7 +1232,7 @@ static int iwl_init_geos(struct iwl_priv *priv)
 	}
 
 	/* 5.2GHz channels start after the 2.4GHz channels */
-	sband = &priv->bands[IEEE80211_BAND_5GHZ];
+	sband = &priv->bands[NL80211_BAND_5GHZ];
 	sband->channels = &channels[ARRAY_SIZE(iwl_eeprom_band_1)];
 	/* just OFDM */
 	sband->bitrates = &rates[IWL_FIRST_OFDM_RATE];
@@ -1240,9 +1240,9 @@ static int iwl_init_geos(struct iwl_priv *priv)
 
 	if (priv->hw_params.sku & EEPROM_SKU_CAP_11N_ENABLE)
 		iwl_init_ht_hw_capab(priv, &sband->ht_cap,
-					 IEEE80211_BAND_5GHZ);
+					 NL80211_BAND_5GHZ);
 
-	sband = &priv->bands[IEEE80211_BAND_2GHZ];
+	sband = &priv->bands[NL80211_BAND_2GHZ];
 	sband->channels = channels;
 	/* OFDM & CCK */
 	sband->bitrates = rates;
@@ -1250,7 +1250,7 @@ static int iwl_init_geos(struct iwl_priv *priv)
 
 	if (priv->hw_params.sku & EEPROM_SKU_CAP_11N_ENABLE)
 		iwl_init_ht_hw_capab(priv, &sband->ht_cap,
-					 IEEE80211_BAND_2GHZ);
+					 NL80211_BAND_2GHZ);
 
 	priv->ieee_channels = channels;
 	priv->ieee_rates = rates;
@@ -1307,7 +1307,7 @@ static int iwl_init_geos(struct iwl_priv *priv)
 	priv->tx_power_user_lmt = max_tx_power;
 	priv->tx_power_next = max_tx_power;
 
-	if ((priv->bands[IEEE80211_BAND_5GHZ].n_channels == 0) &&
+	if ((priv->bands[NL80211_BAND_5GHZ].n_channels == 0) &&
 	     priv->hw_params.sku & EEPROM_SKU_CAP_BAND_52GHZ) {
 		IWL_INFO(priv, "Incorrectly detected BG card as ABG. "
 			"Please send your %s to maintainer.\n",
@@ -1316,11 +1316,11 @@ static int iwl_init_geos(struct iwl_priv *priv)
 	}
 
 	if (iwlwifi_mod_params.disable_5ghz)
-		priv->bands[IEEE80211_BAND_5GHZ].n_channels = 0;
+		priv->bands[NL80211_BAND_5GHZ].n_channels = 0;
 
 	IWL_INFO(priv, "Tunable channels: %d 802.11bg, %d 802.11a channels\n",
-		   priv->bands[IEEE80211_BAND_2GHZ].n_channels,
-		   priv->bands[IEEE80211_BAND_5GHZ].n_channels);
+		   priv->bands[NL80211_BAND_2GHZ].n_channels,
+		   priv->bands[NL80211_BAND_5GHZ].n_channels);
 
 	set_bit(STATUS_GEO_CONFIGURED, &priv->status);
 
@@ -1349,7 +1349,7 @@ int iwl_init_drv(struct iwl_priv *priv)
 
 	priv->ieee_channels = NULL;
 	priv->ieee_rates = NULL;
-	priv->band = IEEE80211_BAND_2GHZ;
+	priv->band = NL80211_BAND_2GHZ;
 
 	priv->plcp_delta_threshold =
 		priv->cfg->base_params->plcp_delta_threshold;

@@ -610,10 +610,10 @@ iwl_eeprom_enh_txp_read_element(struct iwl_priv *priv,
 {
 	int ch_idx;
 	bool is_ht40 = txp->flags & IWL_EEPROM_ENH_TXP_FL_40MHZ;
-	enum ieee80211_band band;
+	enum nl80211_band band;
 
 	band = txp->flags & IWL_EEPROM_ENH_TXP_FL_BAND_52G ?
-		IEEE80211_BAND_5GHZ : IEEE80211_BAND_2GHZ;
+		NL80211_BAND_5GHZ : NL80211_BAND_2GHZ;
 
 	for (ch_idx = 0; ch_idx < priv->channel_count; ch_idx++) {
 		struct iwl_channel_info *ch_info = &priv->channel_info[ch_idx];
@@ -893,7 +893,7 @@ static void iwl_init_band_reference(struct iwl_priv *priv,
  * Does not set up a command, or touch hardware.
  */
 static int iwl_mod_ht40_chan_info(struct iwl_priv *priv,
-			      enum ieee80211_band band, u16 channel,
+			      enum nl80211_band band, u16 channel,
 			      const struct iwl_eeprom_channel *eeprom_ch,
 			      u8 clear_ht40_extension_channel)
 {
@@ -983,8 +983,8 @@ int iwl_init_channel_map(struct iwl_priv *priv)
 		/* Loop through each band adding each of the channels */
 		for (ch = 0; ch < eeprom_ch_count; ch++) {
 			ch_info->channel = eeprom_ch_index[ch];
-			ch_info->band = (band == 1) ? IEEE80211_BAND_2GHZ :
-			    IEEE80211_BAND_5GHZ;
+			ch_info->band = (band == 1) ? NL80211_BAND_2GHZ :
+			    NL80211_BAND_5GHZ;
 
 			/* permanently store EEPROM's channel regulatory flags
 			 *   and max power in channel info database. */
@@ -1049,14 +1049,14 @@ int iwl_init_channel_map(struct iwl_priv *priv)
 
 	/* Two additional EEPROM bands for 2.4 and 5 GHz HT40 channels */
 	for (band = 6; band <= 7; band++) {
-		enum ieee80211_band ieeeband;
+		enum nl80211_band ieeeband;
 
 		iwl_init_band_reference(priv, band, &eeprom_ch_count,
 					&eeprom_ch_info, &eeprom_ch_index);
 
 		/* EEPROM band 6 is 2.4, band 7 is 5 GHz */
 		ieeeband =
-			(band == 6) ? IEEE80211_BAND_2GHZ : IEEE80211_BAND_5GHZ;
+			(band == 6) ? NL80211_BAND_2GHZ : NL80211_BAND_5GHZ;
 
 		/* Loop through each band adding each of the channels */
 		for (ch = 0; ch < eeprom_ch_count; ch++) {
@@ -1100,18 +1100,18 @@ void iwl_free_channel_map(struct iwl_priv *priv)
  * Based on band and channel number.
  */
 const struct iwl_channel_info *iwl_get_channel_info(const struct iwl_priv *priv,
-					enum ieee80211_band band, u16 channel)
+					enum nl80211_band band, u16 channel)
 {
 	int i;
 
 	switch (band) {
-	case IEEE80211_BAND_5GHZ:
+	case NL80211_BAND_5GHZ:
 		for (i = 14; i < priv->channel_count; i++) {
 			if (priv->channel_info[i].channel == channel)
 				return &priv->channel_info[i];
 		}
 		break;
-	case IEEE80211_BAND_2GHZ:
+	case NL80211_BAND_2GHZ:
 		if (channel >= 1 && channel <= 14)
 			return &priv->channel_info[channel - 1];
 		break;
