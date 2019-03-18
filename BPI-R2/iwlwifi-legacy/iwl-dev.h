@@ -808,7 +808,7 @@ struct iwl_priv {
 	struct cfg80211_scan_request *scan_request;
 	struct ieee80211_vif *scan_vif;
 	enum iwl_scan_type scan_type;
-	u8 scan_tx_ant[IEEE80211_NUM_BANDS];
+	u8 scan_tx_ant[NUM_NL80211_BANDS];
 	u8 mgmt_tx_ant;
 
 	/* max number of station keys */

@@ -563,8 +563,9 @@ void iwl_cmd_queue_full(struct iwl_op_mode *op_mode);
 void iwl_nic_config(struct iwl_op_mode *op_mode);
 int iwlagn_mac_set_tim(struct ieee80211_hw *hw,
 		       struct ieee80211_sta *sta, bool set);
-void iwlagn_mac_rssi_callback(struct ieee80211_hw *hw,
-			      enum ieee80211_rssi_event rssi_event);
+void iwlagn_mac_event_callback(struct ieee80211_hw *hw,
+				struct ieee80211_vif *vif,
+			  const struct ieee80211_event *event);
 int iwlagn_mac_cancel_remain_on_channel(struct ieee80211_hw *hw);
 int iwlagn_mac_tx_last_beacon(struct ieee80211_hw *hw);
 void iwlagn_mac_flush(struct ieee80211_hw *hw, bool drop);
