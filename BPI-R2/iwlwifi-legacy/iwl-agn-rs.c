@@ -2754,7 +2754,7 @@ static void rs_get_rate(void *priv_r, struct ieee80211_sta *sta, void *priv_sta,
 
 	/* Get max rate if user set max rate */
 	if (lq_sta) {
-		lq_sta->max_rate_idx = txrc->max_rate_idx;
+		lq_sta->max_rate_idx = fls(txrc->rate_idx_mask) - 1;
 		if ((sband->band == NL80211_BAND_5GHZ) &&
 		    (lq_sta->max_rate_idx != -1))
 			lq_sta->max_rate_idx += IWL_FIRST_OFDM_RATE;
@@ -2845,7 +2845,7 @@ void iwl_rs_rate_init(struct iwl_priv *priv, struct ieee80211_sta *sta, u8 sta_i
 
 	sta_priv = (struct iwl_station_priv *) sta->drv_priv;
 	lq_sta = &sta_priv->lq_sta;
-	sband = hw->wiphy->bands[conf->channel->band];
+	sband = hw->wiphy->bands[conf->chandef.chan->band];
 
 
 	lq_sta->lq.sta_id = sta_id;
@@ -3352,11 +3352,11 @@ static void rs_remove_debugfs(void *priv, void *priv_sta)
  * station is added we ignore it.
  */
 static void rs_rate_init_stub(void *priv_r, struct ieee80211_supported_band *sband,
-			 struct ieee80211_sta *sta, void *priv_sta)
+			      struct cfg80211_chan_def *chandef,
+			      struct ieee80211_sta *sta, void *priv_sta)
 {
 }
 static struct rate_control_ops rs_ops = {
-	.module = NULL,
 	.name = RS_NAME,
 	.tx_status = rs_tx_status,
 	.get_rate = rs_get_rate,
