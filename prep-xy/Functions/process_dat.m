@@ -18,7 +18,7 @@ function ret = process_dat(fn, pn)
     fprintf('[2] Scaling into linear\n');
     for pidx = 1:length(raw_data)
         csi(pidx,:,:,:) = get_scaled_csi(raw_data{pidx});
-        timestamp(pidx) = raw_data{pidx}.timestamp_low * 1.0e-6;
+        timestamp(pidx) = (raw_data{pidx}.timestamp_low - raw_data{1}.timestamp_low) * 1.0e-6;
         if mod(pidx, 100) == 0 && pidx ~= 0
             if mod(pidx, 10000) == 0
                 fprintf('*\n');
