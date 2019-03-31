@@ -1,8 +1,10 @@
-import Config as conf
-import numpy as np, numpy
 import csv
 import glob
 import os
+
+import numpy as np
+
+import Config as conf
 
 
 def importCSV(xPath, yPath):
@@ -18,16 +20,16 @@ def importCSV(xPath, yPath):
         # Read CSV and prepare temporary variables
         rawCSV = [[float(cell) for cell in line]
                   for line in csv.reader(open(csvFile, "r"))]
-        csv = np.array(rawCSV)
-        patialXX = np.empty([0, conf.WINDOW_SIZE, conf.PKT_COLUMNS], float)
+        csvData = np.array(rawCSV)
+        partialXX = np.empty([0, conf.WINDOW_SIZE, conf.PKT_COLUMNS], float)
 
         # Cut data to fit window and organize them
         i = 0
-        while i <= (len(csv) + 1 - 2 * conf.WINDOW_SIZE):
+        while i <= (len(csvData) + 1 - 2 * conf.WINDOW_SIZE):
             # Cut 1th to {conf.PKT_COLUMNS} records of {conf.WINDOW_SIZE} packets
             window = np.dstack(
                 np.array(
-                    csv[i:i + conf.WINDOW_SIZE, 1:1 + conf.PKT_COLUMNS]).T)
+                    csvData[i:i + conf.WINDOW_SIZE, 1:1 + conf.PKT_COLUMNS]).T)
             partialXX = np.concatenate((partialXX, window), axis=0)
             # Jump to the start point of next window
             i += conf.SLIDE_SIZE
@@ -43,23 +45,23 @@ def importCSV(xPath, yPath):
         print("Processing Y: ", csvFile)
 
         # Read CSV and prepare temporary variables
-        rawCSV = [[int(cell) for cell in line]
+        rawCSV = [[float(cell) for cell in line]
                   for line in csv.reader(open(csvFile, "r"))]
-        csv = np.array(rawCSV)
+        csvData = np.array(rawCSV)
         partialYY = np.zeros(
-            ((len(csv) + 1 - 2 * conf.WINDOW_SIZE) // conf.SLIDE_SIZE + 1,
+            ((len(csvData) + 1 - 2 * conf.WINDOW_SIZE) // conf.SLIDE_SIZE + 1,
              conf.N_CLASSES))
 
         # Parse data and convert them
         i = 0
-        while i <= (len(csv) + 1 - 2 * conf.WINDOW_SIZE):
+        while i <= (len(csvData) + 1 - 2 * conf.WINDOW_SIZE):
             # Cut 1th to {conf.WINDOW_SIZE} packets
-            window = np.stack(np.array(csv[i:i + conf.WINDOW_SIZE, 1]))
+            window = np.stack(np.array(csvData[i:i + conf.WINDOW_SIZE, 1]))
 
             # Count each classes
             yRawCount = np.zeros(conf.N_CLASSES)
             for j in range(conf.WINDOW_SIZE):
-                yRawCount[window[j]] += 1
+                yRawCount[int(window[j])] += 1
 
             # If a class overs zeros
             value = np.zeros(conf.N_CLASSES)
@@ -89,6 +91,8 @@ if __name__ == "__main__":
 
     # Calculate and save
     for i, label in enumerate(conf.ACTIONS):
+        print("About " + label + " ...")
+
         # Specify paths
         srcCSIPath = conf.SOURCE_PATH.format("csi", label)
         srcActionPath = conf.SOURCE_PATH.format("action", label)

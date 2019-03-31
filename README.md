@@ -2,6 +2,11 @@
 This repository includes codomain (for CSI data) maker, CSI(.dat) to CSV converter, and RNN learner for data.  
 `prep-xy` directory is partially based on [ermongroup's WAR](https://github.com/ermongroup/Wifi_Activity_Recognition).  
 
+## Overall Process
+1. Record CSI data with running `make-y`.  
+2. Convert their raw data to learnable `.csv` data using `prep-xy`.  
+3. Do learn them using `learn-xy`.  
+
 ## `make-y`
 This makes codomain for csi data.  
 
@@ -20,7 +25,6 @@ All results will be saved on the same directory of input file.
 3. Run `prep_x()` on command line and select raw CSI `.dat` file.  
 4. Run `prep_y()` on command line and select converted CSI (`.csv`) file and raw y `.y` file.  
 
-## Overall Process
-1. Record CSI data with running `make-y`.  
-2. Convert their raw data to learnable `.csv` data using `prep-xy`.  
-3. Do learn them using `learn-xy`.  
+## `learn-xy`
+This does learning of X and Y.  
+__For how to use__, look [here](learn-xy/README.md).

@@ -1,96 +1,55 @@
-import CV_config
-import csv
-import glob
-import gzip
-import os
-
 import numpy as np
 import pandas as pd
 
-
-class DataSet(object):
-
-    def __init__(self, images, labels):
-        assert images.shape[0] == labels.shape[0], (
-            'images.shape: %s labels.shape: %s' % (images.shape, labels.shape)
-        )
-        self._num_examples = images.shape[0]
-        images = images.reshape(
-            images.shape[0], images.shape[1] * images.shape[2])
-        self._images = images
-        self._labels = labels
-        self._epochs_completed = 0
-        self._index_in_epoch = 0
-
-    @property
-    def images(self):
-        return self._images
-
-    @property
-    def labels(self):
-        return self._labels
-
-    @property
-    def num_examples(self):
-        return self._num_examples
-
-    @property
-    def epochs_completed(self):
-        return self._epochs_completed
-
-    def next_batch(self, batch_size):
-        start = self._index_in_epoch
-        self._index_in_epoch += batch_size
-        if self._index_in_epoch > self._num_examples:
-            # Finished epoch
-            self._epochs_completed += 1
-            # Shuffle the data
-            perm = np.arange(self._num_examples)
-            np.random.shuffle(perm)
-            self._images = self._images[perm]
-            self._labels = self._labels[perm]
-            # Start next epoch
-            start = 0
-            self._index_in_epoch = batch_size
-            assert batch_size <= self._num_examples
-        end = self._index_in_epoch
-        return self._images[start:end], self._labels[start:end]
+import Config as conf
 
 
-def csv_import():
-    x_by_action = {}
-    y_by_action = {}
+def importCSV():
+    # Initialize variables
+    xByAction = {}
+    yByAction = {}
+
     print("Importing CSV files...")
-    for b in CV_config.ACTIONS:
-        # Skip every 2 rows -> overlap 800ms to 600ms  (To avoid memory error)
-        SKIPROW = 2
-        num_lines = sum(
-            1 for l in open(CV_config.MERGED_PATH.format('csi', str(b))))
-        skip_idx = [x for x in range(1, num_lines) if x % SKIPROW != 0]
+
+    # Process by actions
+    for b in conf.ACTIONS:
+
+        # If {conf.N_SKIPROW} defined, skip some indexes
+        skipIndex = []
+        if conf.N_SKIPROW != 0:
+            nLines = sum(
+                1 for lines in open(conf.MERGED_PATH.format('csi', str(b))))
+            skipIndex = [
+                x for x in range(1, nLines) if x % conf.N_SKIPROW != 0
+            ]
+
+        # Load CSVs
         xx = np.array(
             pd.read_csv(
-                CV_config.MERGED_PATH.format('csi', str(b)),
+                conf.MERGED_PATH.format('csi', str(b)),
                 header=None,
-                skiprows=skip_idx))
+                skiprows=skipIndex))
         yy = np.array(
             pd.read_csv(
-                CV_config.MERGED_PATH.format('action', str(b)),
+                conf.MERGED_PATH.format('action', str(b)),
                 header=None,
-                skiprows=skip_idx))
+                skiprows=skipIndex))
 
-        # eliminate the NoActivity Data
+        # Eliminate the NoActivity Data
         rows, cols = np.where(yy > 0)
         xx = np.delete(xx, rows[np.where(cols == 0)], 0)
         yy = np.delete(yy, rows[np.where(cols == 0)], 0)
 
-        xx = xx.reshape(len(xx), 1000, 90)
+        xx = xx.reshape(len(xx), conf.WINDOW_SIZE, conf.PKT_COLUMNS)
 
         # 1000 Hz to 500 Hz (To avoid memory error)
-        xx = xx[:, ::2, :90]
+        # xx = xx[:, ::2, :90]
 
-        x_by_action[str(b)] = xx
-        y_by_action[str(b)] = yy
+        xByAction[str(b)] = xx
+        yByAction[str(b)] = yy
 
-        print(str(b), "finished...", "xx=", xx.shape, "yy=",  yy.shape)
+        print(str(b), "finished...", "xx=", xx.shape, "yy=", yy.shape)
 
-    return x_by_action, y_by_action
+    print("Importing finished!")
+
+    return xByAction, yByAction
