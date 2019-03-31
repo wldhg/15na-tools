@@ -1,4 +1,5 @@
 from CV_input_data import csv_import, DataSet
+import CV_config
 import csv
 import os
 import sys

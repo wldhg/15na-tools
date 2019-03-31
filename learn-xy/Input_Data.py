@@ -1,3 +1,4 @@
+import CV_config
 import csv
 import glob
 import gzip
@@ -57,18 +58,25 @@ class DataSet(object):
 
 
 def csv_import():
-    x_by_behavior = {}
-    y_by_behavior = {}
-    print("csv file importing...")
-    for b in ['sitdown', 'standup', 'to_bad', 'to_good']:
+    x_by_action = {}
+    y_by_action = {}
+    print("Importing CSV files...")
+    for b in CV_config.ACTIONS:
         # Skip every 2 rows -> overlap 800ms to 600ms  (To avoid memory error)
         SKIPROW = 2
-        num_lines = sum(1 for l in open("./input/csi_" + str(b) + ".csv"))
+        num_lines = sum(
+            1 for l in open(CV_config.MERGED_PATH.format('csi', str(b))))
         skip_idx = [x for x in range(1, num_lines) if x % SKIPROW != 0]
-        xx = np.array(pd.read_csv("./input/csi_" +
-                                  str(b) + ".csv", header=None, skiprows=skip_idx))
-        yy = np.array(pd.read_csv("./input/behavior_" +
-                                  str(b) + ".csv", header=None, skiprows=skip_idx))
+        xx = np.array(
+            pd.read_csv(
+                CV_config.MERGED_PATH.format('csi', str(b)),
+                header=None,
+                skiprows=skip_idx))
+        yy = np.array(
+            pd.read_csv(
+                CV_config.MERGED_PATH.format('action', str(b)),
+                header=None,
+                skiprows=skip_idx))
 
         # eliminate the NoActivity Data
         rows, cols = np.where(yy > 0)
@@ -80,10 +88,9 @@ def csv_import():
         # 1000 Hz to 500 Hz (To avoid memory error)
         xx = xx[:, ::2, :90]
 
-        x_by_behavior[str(b)] = xx
-        y_by_behavior[str(b)] = yy
+        x_by_action[str(b)] = xx
+        y_by_action[str(b)] = yy
 
         print(str(b), "finished...", "xx=", xx.shape, "yy=",  yy.shape)
 
-    return x_by_behavior['sitdown'], x_by_behavior['standup'], x_by_behavior['to_bad'], x_by_behavior['to_good'], \
-        y_by_behavior['sitdown'], y_by_behavior['standup'], y_by_behavior['to_bad'], y_by_behavior['to_good']
+    return x_by_action, y_by_action
