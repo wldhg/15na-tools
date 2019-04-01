@@ -1,5 +1,15 @@
 # POSCA Tools - `learn-xy`
 
+### Required version & Packages
+
+This works on **Python 3.6**
+
+-   `tensorflow` or `tensorflow-gpu`
+-   `keras` or `keras-gpu`
+-   `scikit-learn`
+-   `pandas`
+-   `progressbar2`
+
 ### How to use
 
 1. First, make directory named `Dataset` in `learn-xy` directory.
