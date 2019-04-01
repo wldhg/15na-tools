@@ -1,13 +1,14 @@
 import csv
 import glob
 import os
+import shutil
 
 import numpy as np
 
 import Config as conf
 
 
-def importCSV(xPath, yPath):
+def mergeCSVOfAction(xPath, yPath):
 
     xx = np.empty([0, conf.WINDOW_SIZE, conf.PKT_COLUMNS], float)
     yy = np.empty([0, conf.N_CLASSES], float)
@@ -70,7 +71,7 @@ def importCSV(xPath, yPath):
                     value[j] = 1
                     break
             if np.sum(value) == 0:
-                value[0] == 2
+                value[0] = 2
             partialYY[int(i / conf.SLIDE_SIZE), :] = value
 
             i += conf.SLIDE_SIZE
@@ -84,10 +85,15 @@ def importCSV(xPath, yPath):
     return (xx, yy)
 
 
-if __name__ == "__main__":
+def mergeCSV():
     # Check output directory
-    if not os.path.exists(conf.MERGED_DIR):
-        os.makedirs(conf.MERGED_DIR)
+    mergedDir = conf.MERGED_DIR.format(conf.WINDOW_SIZE, conf.PKT_COLUMNS)
+    if os.path.exists(mergedDir):
+        print("Old files found. Remove them to continue...")
+        shutil.rmtree(mergedDir)
+        while os.path.exists(mergedDir):
+            pass
+    os.makedirs(mergedDir)
 
     # Calculate and save
     for i, label in enumerate(conf.ACTIONS):
@@ -96,11 +102,13 @@ if __name__ == "__main__":
         # Specify paths
         srcCSIPath = conf.SOURCE_PATH.format("csi", label)
         srcActionPath = conf.SOURCE_PATH.format("action", label)
-        mergedCSIPath = conf.MERGED_PATH.format("csi", label)
-        mergedActionPath = conf.MERGED_PATH.format("action", label)
+        mergedCSIPath = conf.MERGED_PATH.format(conf.WINDOW_SIZE,
+                                                conf.PKT_COLUMNS, "csi", label)
+        mergedActionPath = conf.MERGED_PATH.format(
+            conf.WINDOW_SIZE, conf.PKT_COLUMNS, "action", label)
 
         # Calculate merges
-        x, y = importCSV(srcCSIPath, srcActionPath)
+        x, y = mergeCSVOfAction(srcCSIPath, srcActionPath)
 
         # Save calculated merges
         with open(mergedCSIPath, "w") as outputCSI:
@@ -112,3 +120,67 @@ if __name__ == "__main__":
 
         # Finished
         print("==== Action \"" + label + "\" Finished! ====")
+
+
+def getCSV():
+    # Initialize variables
+    xByAction = {}
+    yByAction = {}
+
+    # Check whether if input directory exists
+    if not os.path.exists(conf.MERGED_DIR.format(conf.WINDOW_SIZE, conf.PKT_COLUMNS)):
+        print("Input directory not found. Calculate merged CSVs...")
+        mergeCSV()
+        print("Calculation finished!")
+
+    print("Importing CSV files...")
+
+    # Process by actions
+    for b in conf.ACTIONS:
+
+        # If {conf.N_SKIPROW} defined, skip some indexes
+        skipIndex = []
+        if conf.N_SKIPROW != 0:
+            nLines = sum(1 for lines in open(
+                conf.MERGED_PATH.format(conf.WINDOW_SIZE, conf.PKT_COLUMNS,
+                                        'csi', str(b))))
+            skipIndex = [
+                x for x in range(1, nLines) if x % conf.N_SKIPROW != 0
+            ]
+
+        # Load CSVs
+        xx = np.array(
+            pd.read_csv(
+                conf.MERGED_PATH.format(conf.WINDOW_SIZE, conf.PKT_COLUMNS,
+                                        'csi', str(b)),
+                header=None,
+                skiprows=skipIndex))
+        yy = np.array(
+            pd.read_csv(
+                conf.MERGED_PATH.format(conf.WINDOW_SIZE, conf.PKT_COLUMNS,
+                                        'action', str(b)),
+                header=None,
+                skiprows=skipIndex))
+
+        # Eliminate the NoActivity Data
+        rows, cols = np.where(yy > 0)
+        xx = np.delete(xx, rows[np.where(cols == 0)], 0)
+        yy = np.delete(yy, rows[np.where(cols == 0)], 0)
+
+        xx = xx.reshape(len(xx), conf.WINDOW_SIZE, conf.PKT_COLUMNS)
+
+        # 1000 Hz to 500 Hz (To avoid memory error)
+        # xx = xx[:, ::2, :90]
+
+        xByAction[str(b)] = xx
+        yByAction[str(b)] = yy
+
+        print(str(b), "finished...", "xx=", xx.shape, "yy=", yy.shape)
+
+    print("Importing finished!")
+
+    return xByAction, yByAction
+
+
+if __name__ == "__main__":
+    mergeCSV()

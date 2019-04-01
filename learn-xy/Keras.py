@@ -11,7 +11,7 @@ import sklearn as sk
 import sklearn.utils as sku
 
 import Config as conf
-import Input_Data as data
+import CSV as csv
 
 # Check output directory
 outputDir = conf.OUTPUT_PATH.format(conf.LEARNING_RATE, conf.BATCH_SIZE,
@@ -39,10 +39,9 @@ print(
 )
 print("    tensorboard --logdir=" + logDir)
 
-checkpoint = kc.ModelCheckpoint(conf.OUTPUT_PATH.format("Checkpoint_EPOCH{0}.h5"), period=20)
-print(
-    "Keras checkpoints and final result will be saved in here:"
-)
+checkpoint = kc.ModelCheckpoint(
+    outputDir + "Checkpoint_EPOCH{0}.h5", period=20)
+print("Keras checkpoints and final result will be saved in here:")
 print("    " + outputDir)
 
 # Setup Keras RNN Model
@@ -59,7 +58,7 @@ model.compile(
     loss="categorical_crossentropy", optimizer=adam, metrics=["accuracy"])
 
 # Import CSV data
-xs, ys = data.importCSV()
+xs, ys = csv.getCSV()
 
 # Shuffle data
 for a in conf.ACTIONS:
@@ -98,6 +97,7 @@ for i in range(conf.KFOLD):
     yTrain = yTrain[:, 1:]
     yEval = yEval[:, 1:]
 
+    # Fit model (learn)
     print(
         str(i) + " th fitting started. Endpoint is " + str(conf.KFOLD) +
         " th.")

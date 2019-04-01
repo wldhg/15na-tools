@@ -121,7 +121,7 @@ Input/*
 Output_*
 Log_*
 _study*.ipynb
-Untitled.ipynb
+Untitled*.ipynb
 
 # VS Code
 .vscode/*
