@@ -8,7 +8,6 @@ This works on **Python 3.6**
 -   `keras` or `keras-gpu`
 -   `scikit-learn`
 -   `pandas`
--   `progressbar2`
 
 ### How to use
 

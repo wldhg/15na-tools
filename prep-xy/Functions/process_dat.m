@@ -21,7 +21,7 @@ function ret = process_dat(fn, pn)
         timestamp(pidx) = (raw_data{pidx}.timestamp_low - raw_data{1}.timestamp_low) * 1.0e-6;
         if mod(pidx, 100) == 0 && pidx ~= 0
             if mod(pidx, 10000) == 0
-                fprintf('*\n');
+                fprintf('*' + string(pidx / 1000) + 'k\n');
             else
                 fprintf('.');
             end
@@ -34,20 +34,21 @@ function ret = process_dat(fn, pn)
 
     % File export
     fprintf('[3] Calculating amplitude & phase\n');
-    csi_amp = permute(db(abs(squeeze(csi))), [2 3 4 1]);
-    csi_phase = permute(angle(squeeze(csi)), [2 3 4 1]);
+    csi_amp = permute(db(abs(csi)), [2 3 4 1]);
+    csi_phase = permute(angle(csi), [2 3 4 1]);
 
     fprintf('[4] Calibrating phase\n');
     cali_phase_counter = 1;
     cali_phase_counter_standard_100 = raw_data{1}.Ntx * raw_data{1}.Nrx * 100;
-    cali_phase_counter_standard_10000 = raw_data{1}.Ntx * raw_data{1}.Nrx * 10000;
-    for k = 1:size(csi_phase, 1)
-        for m = 1:3
-            for j = 1:size(csi_phase, 4)
+    cali_phase_counter_standard_1000 = cali_phase_counter_standard_100 * 10;
+    cali_phase_counter_standard_10000 = cali_phase_counter_standard_100 * 100;
+    for k = 1:raw_data{1}.Ntx
+        for m = 1:raw_data{1}.Nrx
+            for j = 1:length(raw_data)
                 csi_phase_calibrated(k, m, :, j) = phase_calibration(csi_phase(k, m, :, j));
                 if mod(cali_phase_counter, cali_phase_counter_standard_100) == 0 && pidx ~= 0
                     if mod(cali_phase_counter, cali_phase_counter_standard_10000) == 0
-                        fprintf('*\n');
+                        fprintf('*' + string(cali_phase_counter / cali_phase_counter_standard_1000) + 'k\n');
                     else
                         fprintf('.');
                     end
@@ -63,17 +64,17 @@ function ret = process_dat(fn, pn)
     fprintf('[5] Merging data\n');
     for pidx = 1:length(raw_data)
         catenAmp = reshape(squeeze(csi_amp(1,:,:,pidx))', [1, 90]);
-        catenPhase = reshape(squeeze(csi_phase_calibrated(1,:,:,pidx))', [1,90]);
+        catenPhase = reshape(squeeze(csi_phase_calibrated(1,:,:,pidx))', [1, 90]);
         if raw_data{1}.Ntx > 2
             for ntx = 2:raw_data{1}.Ntx
                 catenAmp = horzcat(catenAmp, reshape(squeeze(csi_amp(ntx,:,:,pidx))', [1, 90]));
-                catenPhase = horzcat(catenPhase, reshape(squeeze(csi_phase_calibrated(ntx,:,:,pidx))', [1,90]));
+                catenPhase = horzcat(catenPhase, reshape(squeeze(csi_phase_calibrated(ntx,:,:,pidx))', [1, 90]));
             end
         end
         temp = [temp;horzcat(catenAmp, catenPhase)];
         if mod(pidx, 100) == 0 && pidx ~= 0
             if mod(pidx, 10000) == 0
-                fprintf('*\n');
+                fprintf('*' + string(pidx / 1000) + 'k\n');
             else
                 fprintf('.');
             end

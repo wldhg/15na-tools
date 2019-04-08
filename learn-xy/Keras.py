@@ -97,6 +97,11 @@ for i in range(conf.KFOLD):
     yTrain = yTrain[:, 1:]
     yEval = yEval[:, 1:]
 
+    # If there exists only one action, convert Y to binary form
+    if yEval.shape[1] == 1:
+        yTrain = ku.to_categorical(yTrain)
+        yEval = ku.to_categorical(yEval)
+
     # Fit model (learn)
     print(
         str(i) + " th fitting started. Endpoint is " + str(conf.KFOLD) +

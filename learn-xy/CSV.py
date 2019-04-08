@@ -88,7 +88,8 @@ def mergeCSVOfAction(xPath, yPath):
 
 def mergeCSV():
     # Check output directory
-    mergedDir = conf.MERGED_DIR.format(conf.WINDOW_SIZE, conf.PKT_COLUMNS)
+    mergedDir = conf.MERGED_DIR.format(conf.WINDOW_SIZE, conf.PKT_COLUMNS,
+                                       conf.THRESHOLD)
     if os.path.exists(mergedDir):
         print("Old files found. Remove them to continue...")
         shutil.rmtree(mergedDir)
@@ -105,15 +106,17 @@ def mergeCSV():
         # Specify paths
         srcCSIPath = conf.SOURCE_PATH.format("csi", label)
         srcActionPath = conf.SOURCE_PATH.format("action", label)
-        mergedCSIPath = conf.MERGED_PATH.format(conf.WINDOW_SIZE,
-                                                conf.PKT_COLUMNS, "csi", label)
+        mergedCSIPath = conf.MERGED_PATH.format(
+            conf.WINDOW_SIZE, conf.PKT_COLUMNS, conf.THRESHOLD, "csi", label)
         mergedActionPath = conf.MERGED_PATH.format(
-            conf.WINDOW_SIZE, conf.PKT_COLUMNS, "action", label)
+            conf.WINDOW_SIZE, conf.PKT_COLUMNS, conf.THRESHOLD, "action",
+            label)
 
         # Calculate merges
         x, y = mergeCSVOfAction(srcCSIPath, srcActionPath)
 
         # Save calculated merges
+        print("Writing calculated X/Ys ...")
         with open(mergedCSIPath, "w") as outputCSI:
             writer = csv.writer(outputCSI, lineterminator="\n")
             writer.writerows(x)
@@ -139,27 +142,30 @@ def getCSV():
     yyRaw = {}
 
     # Check whether if input directory exists
-    if not os.path.exists(conf.MERGED_DIR.format(conf.WINDOW_SIZE, conf.PKT_COLUMNS)):
+    if not os.path.exists(
+            conf.MERGED_DIR.format(conf.WINDOW_SIZE, conf.PKT_COLUMNS,
+                                   conf.THRESHOLD)):
         print("Input directory not found. Calculate merged CSVs...")
         xxRaw, yyRaw = mergeCSV()
         print("Calculation finished!")
         print("CSV data automatically imported from cache.")
         for b in conf.ACTIONS:
-            print(str(b), "taken from cache...", "xx=", xxRaw[str(b)].shape, "yy=", yyRaw[str(b)].shape)
+            print(
+                str(b), "taken from cache...", "xx=", xxRaw[str(b)].shape,
+                "yy=", yyRaw[str(b)].shape)
 
     else:
         print("Importing CSV files...")
-        print("No-Activity windows are removed in this step.")
 
         # Process by actions
         for b in conf.ACTIONS:
 
             # If {conf.N_SKIPROW} defined, skip some indexes
             skipIndex = []
-            if conf.N_SKIPROW != 0:
+            if conf.N_SKIPROW > 0:
                 nLines = sum(1 for lines in open(
                     conf.MERGED_PATH.format(conf.WINDOW_SIZE, conf.PKT_COLUMNS,
-                                            'csi', str(b))))
+                                            conf.THRESHOLD, 'csi', str(b))))
                 skipIndex = [
                     x for x in range(1, nLines) if x % conf.N_SKIPROW != 0
                 ]
@@ -168,38 +174,44 @@ def getCSV():
             xx = np.array(
                 pd.read_csv(
                     conf.MERGED_PATH.format(conf.WINDOW_SIZE, conf.PKT_COLUMNS,
-                                            'csi', str(b)),
+                                            conf.THRESHOLD, 'csi', str(b)),
                     header=None,
                     skiprows=skipIndex))
             yy = np.array(
                 pd.read_csv(
                     conf.MERGED_PATH.format(conf.WINDOW_SIZE, conf.PKT_COLUMNS,
-                                            'action', str(b)),
+                                            conf.THRESHOLD, 'action', str(b)),
                     header=None,
                     skiprows=skipIndex))
 
             xxRaw[str(b)] = xx
             yyRaw[str(b)] = yy
 
-            for b in conf.ACTIONS:
-                print(str(b), "importing finished...", "xx=", xxRaw[str(b)].shape, "yy=", yyRaw[str(b)].shape)
+        for b in conf.ACTIONS:
+            print(
+                str(b), "importing finished...", "xx=", xxRaw[str(b)].shape,
+                "yy=", yyRaw[str(b)].shape)
 
     print("Reshaping imported data...")
+    # print("No-Activity windows are removed in this step.")
     for b in conf.ACTIONS:
         # Eliminate the NoActivity Data
-        rows, cols = np.where(yyRaw[b] > 0)
-        xxRaw[b] = np.delete(xxRaw[b], rows[np.where(cols == 0)], 0)
-        yyRaw[b] = np.delete(yyRaw[b], rows[np.where(cols == 0)], 0)
+        # rows, cols = np.where(yyRaw[b] > 0)
+        # xxRaw[b] = np.delete(xxRaw[b], rows[np.where(cols == 0)], 0)
+        # yyRaw[b] = np.delete(yyRaw[b], rows[np.where(cols == 0)], 0)
 
-        xxRaw[b] = xxRaw[b].reshape(len(xxRaw[b]), conf.WINDOW_SIZE, conf.PKT_COLUMNS)
+        xxRaw[str(b)] = xxRaw[str(b)].reshape(
+            len(xxRaw[str(b)]), conf.WINDOW_SIZE, conf.PKT_COLUMNS)
 
-        # 1000 Hz to 500 Hz (To avoid memory error)
-        # xx = xx[:, ::2, :90]
+        # Fit to 1000 Hz to avoid memory error
+        xxRaw = xxRaw[:, ::int(conf.PKT_HZ / 1000), :90]
 
-        xByAction[str(b)] = xxRaw[b]
-        yByAction[str(b)] = yyRaw[b]
+        xByAction[str(b)] = xxRaw[str(b)]
+        yByAction[str(b)] = yyRaw[str(b)]
 
-        print(str(b), " reshaping finished...", "xx=", xByAction[str(b)].shape, "yy=", yByAction[str(b)].shape)
+        print(
+            str(b), "reshaping finished...", "xx=", xByAction[str(b)].shape,
+            "yy=", yByAction[str(b)].shape)
 
     print("Loading CSV finished!")
 
