@@ -150,15 +150,31 @@ def getCSV():
         print("Calculation finished!")
         print("CSV data automatically imported from cache.")
         for b in conf.ACTIONS:
-            print(
+            print("[1 / 3]",
                 str(b), "taken from cache...", "xx=", xxRaw[str(b)].shape,
                 "yy=", yyRaw[str(b)].shape)
+
+            # print("[2 / 3] Eliminating No-Activity windows of", str(b), "...")
+            # rows, cols = np.where(yyRaw[b] > 0)
+            # xxRaw[b] = np.delete(xxRaw[b], rows[np.where(cols == 0)], 0)
+            # yyRaw[b] = np.delete(yyRaw[b], rows[np.where(cols == 0)], 0)
+            # print("[2 / 3] Eliminating No-Activity windows of", str(b), "finished")
+
+            print("[3 / 3] Reshaping", str(b), "...")
+            xxRaw[str(b)] = xxRaw[str(b)].reshape(
+                len(xxRaw[str(b)]), conf.WINDOW_SIZE, conf.PKT_COLUMNS)
+            # Fit to 500 Hz to avoid memory error
+            xByAction[str(b)] = xxRaw[str(b)][:, ::int(conf.PKT_HZ / 500), :90]
+            yByAction[str(b)] = yyRaw[str(b)]
+            print("[3 / 3] Reshaping", str(b), "finished...", "xx=",
+                  xByAction[str(b)].shape, "yy=", yByAction[str(b)].shape)
 
     else:
         print("Importing CSV files...")
 
         # Process by actions
         for b in conf.ACTIONS:
+            print("[1 / 3] Loading CSV data about", str(b), "...")
 
             # If {conf.N_SKIPROW} defined, skip some indexes
             skipIndex = []
@@ -187,31 +203,24 @@ def getCSV():
             xxRaw[str(b)] = xx
             yyRaw[str(b)] = yy
 
-        for b in conf.ACTIONS:
-            print(
-                str(b), "importing finished...", "xx=", xxRaw[str(b)].shape,
-                "yy=", yyRaw[str(b)].shape)
+            print("[1 / 3] Importing", str(b), "finished...", "xx=",
+                  xxRaw[str(b)].shape, "yy=", yyRaw[str(b)].shape)
 
-    print("Reshaping imported data...")
-    # print("No-Activity windows are removed in this step.")
-    for b in conf.ACTIONS:
-        # Eliminate the NoActivity Data
-        # rows, cols = np.where(yyRaw[b] > 0)
-        # xxRaw[b] = np.delete(xxRaw[b], rows[np.where(cols == 0)], 0)
-        # yyRaw[b] = np.delete(yyRaw[b], rows[np.where(cols == 0)], 0)
+            # print("[2 / 3] Eliminating No-Activity windows of", str(b), "...")
+            # rows, cols = np.where(yyRaw[b] > 0)
+            # xxRaw[b] = np.delete(xxRaw[b], rows[np.where(cols == 0)], 0)
+            # yyRaw[b] = np.delete(yyRaw[b], rows[np.where(cols == 0)], 0)
+            # print("[2 / 3] Eliminating No-Activity windows of", str(b), "finished")
 
-        xxRaw[str(b)] = xxRaw[str(b)].reshape(
-            len(xxRaw[str(b)]), conf.WINDOW_SIZE, conf.PKT_COLUMNS)
-
-        # Fit to 1000 Hz to avoid memory error
-        xxRaw = xxRaw[:, ::int(conf.PKT_HZ / 1000), :90]
-
-        xByAction[str(b)] = xxRaw[str(b)]
-        yByAction[str(b)] = yyRaw[str(b)]
-
-        print(
-            str(b), "reshaping finished...", "xx=", xByAction[str(b)].shape,
-            "yy=", yByAction[str(b)].shape)
+            print("[3 / 3] Reshaping", str(b), "...")
+            xxRaw[str(b)] = xxRaw[str(b)].reshape(
+                len(xxRaw[str(b)]), conf.WINDOW_SIZE, conf.PKT_COLUMNS)
+            # Fit to 500 Hz to avoid memory error
+            xByAction[str(b)] = xxRaw[str(b)][:, ::int(conf.PKT_HZ /
+                                                       500), :90]
+            yByAction[str(b)] = yyRaw[str(b)]
+            print("[3 / 3] Reshaping", str(b), "finished...", "xx=",
+                  xByAction[str(b)].shape, "yy=", yByAction[str(b)].shape)
 
     print("Loading CSV finished!")
 

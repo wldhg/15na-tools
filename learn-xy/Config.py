@@ -13,7 +13,7 @@ MERGED_PATH = MERGED_DIR + "{3}_{4}.csv"
 OUTPUT_PATH = "./Output_LR{0}_BATCH{1}_HIDDEN{2}/{3}"
 LOG_PATH = "./Log_LR{0}_BATCH{1}_HIDDEN{2}/{3}"
 
-ACTIONS = ["bed", "fall", "pickup", "run", "sitdown", "standup", "walk"]
+ACTIONS = ["sitdown"]
 
 LEARNING_RATE = 0.0001
 N_ITERATIONS = 2000  # epoch
