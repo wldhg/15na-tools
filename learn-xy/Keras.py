@@ -28,12 +28,12 @@ os.makedirs(logDir)
 # Setup Keras Callbacks
 tensorboard = kc.TensorBoard(
     log_dir=logDir,
-    histogram_freq=10,
+    histogram_freq=0,
     batch_size=conf.BATCH_SIZE,
     write_graph=True,
     write_grads=True,
     write_images=True,
-    update_freq=2)
+    update_freq=10)
 print(
     "If you have tensorboard in this environment, you can type below to see the result in tensorboard:"
 )
@@ -118,7 +118,7 @@ for i in range(conf.KFOLD):
 
 print("Epoch completed! Saving model & weights...")
 modelYML = model.to_yaml()
-with open("model.yml", "w") as yml:
+with open(outputDir + "model.yml", "w") as yml:
     yml.write(modelYML)
 model.save_weights(outputDir + "model.h5")
 print('Model saved! Congratulations! You finished all processes of ML!')
