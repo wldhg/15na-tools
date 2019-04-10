@@ -19,7 +19,8 @@ This works on **Python 3.6**
 4. Run `Keras.py`.
 5. **???** ← This is what machine learning does.
 6. After this, `Output_LR..._...` directory may be created and keras checkpoint file may be in there.
-7. Profit!
+7. Also, `model.h5`, `model.yml`, `model.json` will be in there.
+7. **Profit!** Use these in your way.
 
 ### What can I do after this process?
 
