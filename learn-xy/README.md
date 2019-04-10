@@ -24,4 +24,4 @@ This works on **Python 3.6**
 
 ### What can I do after this process?
 
-You can do everything using your model and weight values. Copy `model.h5`, `model.yml` in output directory to everywhere you want to use your model. Enjoy it!
+You can do everything using your model. Enjoy it!
