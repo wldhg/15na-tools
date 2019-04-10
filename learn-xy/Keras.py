@@ -40,7 +40,7 @@ print(
 print("    tensorboard --logdir=" + logDir)
 
 checkpoint = kc.ModelCheckpoint(
-    outputDir + "Checkpoint_EPOCH{0}.h5", period=20)
+    outputDir + "Checkpoint_EPOCH{epoch}_ACC{val_acc:.4f}.h5", period=20)
 print("Keras checkpoints and final result will be saved in here:")
 print("    " + outputDir)
 
