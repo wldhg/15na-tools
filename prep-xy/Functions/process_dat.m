@@ -34,7 +34,7 @@ function ret = process_dat(fn, pn)
 
     % File export
     fprintf('[3] Calculating amplitude & phase\n');
-    csi_amp = permute(db(abs(csi)), [2 3 4 1]);
+    csi_amp = permute(db(abs(csi) + 1), [2 3 4 1]);
     csi_phase = permute(angle(csi), [2 3 4 1]);
 
     fprintf('[4] Calibrating phase\n');

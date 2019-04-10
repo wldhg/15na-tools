@@ -53,7 +53,7 @@ lstm.add_loss(1e-8)
 adam = ko.Adam(lr=conf.LEARNING_RATE, amsgrad=True)
 model = km.Sequential()
 model.add(lstm)
-model.add(kl.Dense(conf.N_VALID_CLASSES, activation="softmax"))
+model.add(kl.Dense(conf.USE_NOACTIVITY and conf.N_CLASSES or conf.N_VALID_CLASSES, activation="softmax"))
 model.compile(
     loss="categorical_crossentropy", optimizer=adam, metrics=["accuracy"])
 
@@ -93,14 +93,15 @@ for i in range(conf.KFOLD):
         else:
             yEval = np.r_[yEval, ys[a][:int(len(ys[a]) / conf.KFOLD)]]
 
-    # Remove NoActivity from ys
-    yTrain = yTrain[:, 1:]
-    yEval = yEval[:, 1:]
+    if not conf.USE_NOACTIVITY:
+        # Remove NoActivity from ys
+        yTrain = yTrain[:, 1:]
+        yEval = yEval[:, 1:]
 
-    # If there exists only one action, convert Y to binary form
-    if yEval.shape[1] == 1:
-        yTrain = ku.to_categorical(yTrain)
-        yEval = ku.to_categorical(yEval)
+        # If there exists only one action, convert Y to binary form
+        if yEval.shape[1] == 1:
+            yTrain = ku.to_categorical(yTrain)
+            yEval = ku.to_categorical(yEval)
 
     # Fit model (learn)
     print(
@@ -120,5 +121,5 @@ print("Epoch completed! Saving model & weights...")
 modelYML = model.to_yaml()
 with open(outputDir + "model.yml", "w") as yml:
     yml.write(modelYML)
-model.save_weights(outputDir + "model.h5")
+model.save(outputDir + "model.h5")
 print('Model saved! Congratulations! You finished all processes of ML!')
