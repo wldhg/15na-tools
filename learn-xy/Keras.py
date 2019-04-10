@@ -39,6 +39,7 @@ print(
 )
 print("    tensorboard --logdir=" + logDir)
 
+# Notice Checkpoint Directory
 print("Keras checkpoints and final result will be saved in here:")
 print("    " + outputDir)
 
@@ -51,7 +52,8 @@ lstm.add_loss(1e-8)
 adam = ko.Adam(lr=conf.LEARNING_RATE, amsgrad=True)
 model = km.Sequential()
 model.add(lstm)
-model.add(kl.Dense(conf.USE_NOACTIVITY and conf.N_CLASSES or conf.N_VALID_CLASSES, activation="softmax"))
+model.add(kl.Dense(
+    conf.USE_NOACTIVITY and conf.N_CLASSES or conf.N_VALID_CLASSES, activation="softmax"))
 model.compile(
     loss="categorical_crossentropy", optimizer=adam, metrics=["accuracy"])
 
@@ -62,6 +64,7 @@ xs, ys = csv.getCSV()
 for a in conf.ACTIONS:
     xs[a], ys[a] = sku.shuffle(xs[a], ys[a], random_state=0)
 
+# Run KFold
 for i in range(conf.KFOLD):
     # Roll the data
     for a in conf.ACTIONS:
@@ -101,7 +104,7 @@ for i in range(conf.KFOLD):
             yTrain = ku.to_categorical(yTrain)
             yEval = ku.to_categorical(yEval)
 
-    # Initialize checkpoint
+    # Setup Keras Checkpoint
     checkpoint = kc.ModelCheckpoint(
         outputDir + "Checkpoint_K" + str(i) + "_EPOCH{epoch}_ACC{val_acc:.4f}.h5", period=25)
 
@@ -117,7 +120,7 @@ for i in range(conf.KFOLD):
         epochs=conf.N_ITERATIONS,
         verbose=1,
         callbacks=[tensorboard, checkpoint],
-        validation_data=(xEval, yEval))  #, validation_freq=2)
+        validation_data=(xEval, yEval))  # , validation_freq=2)
 
 print("Epoch completed! Saving model & model information...")
 modelYML = model.to_yaml()
