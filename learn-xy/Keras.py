@@ -39,8 +39,6 @@ print(
 )
 print("    tensorboard --logdir=" + logDir)
 
-checkpoint = kc.ModelCheckpoint(
-    outputDir + "Checkpoint_EPOCH{epoch}_ACC{val_acc:.4f}.h5", period=20)
 print("Keras checkpoints and final result will be saved in here:")
 print("    " + outputDir)
 
@@ -102,6 +100,10 @@ for i in range(conf.KFOLD):
         if yEval.shape[1] == 1:
             yTrain = ku.to_categorical(yTrain)
             yEval = ku.to_categorical(yEval)
+
+    # Initialize checkpoint
+    checkpoint = kc.ModelCheckpoint(
+        outputDir + "Checkpoint_K" + str(i) + "_EPOCH{epoch}_ACC{val_acc:.4f}.h5", period=25)
 
     # Fit model (learn)
     print(
