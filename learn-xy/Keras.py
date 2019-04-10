@@ -119,7 +119,7 @@ for i in range(conf.KFOLD):
         callbacks=[tensorboard, checkpoint],
         validation_data=(xEval, yEval))  #, validation_freq=2)
 
-print("Epoch completed! Saving model & weights...")
+print("Epoch completed! Saving model & model information...")
 modelYML = model.to_yaml()
 with open(outputDir + "model.yml", "w") as yml:
     yml.write(modelYML)
