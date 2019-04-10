@@ -121,5 +121,8 @@ print("Epoch completed! Saving model & weights...")
 modelYML = model.to_yaml()
 with open(outputDir + "model.yml", "w") as yml:
     yml.write(modelYML)
+modelJSON = model.to_json()
+with open(outputDir + "model.json", "w") as json:
+    json.write(modelJSON)
 model.save(outputDir + "model.h5")
 print('Model saved! Congratulations! You finished all processes of ML!')
