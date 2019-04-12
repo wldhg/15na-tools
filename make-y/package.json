@@ -18,5 +18,6 @@
   "scripts": {
     "start": "node make-y.js",
     "lint": "npx eslint make-y.js"
-  }
+  },
+  "dependencies": {}
 }
