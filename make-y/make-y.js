@@ -61,11 +61,11 @@ process.stdin.on('data', chunk => {
     var moment = process.hrtime()
     if (y) {
       if (behavior instanceof Buffer && behavior.compare(chunk) === 0) {
-        y.write(`,${moment[0] - time}.${moment[1]}\n`);
+        y.write(`,${moment[0] - time}.${moment[1]}\n`)
         behavior = null
-        console.log(`[-End-] ${chunk.toString()} th behavior.`)
+        console.log(`   └[-End-] ${chunk.toString()} th behavior.`)
       } else if (!behavior) {
-        y.write(`${chunk.toString()},${moment[0] - time}.${moment[1]}`);
+        y.write(`${chunk.toString()},${moment[0] - time}.${moment[1]}`)
         behavior = num[chunk.toString()]
         console.log(`[Start] ${chunk.toString()} th behavior.`)
       }

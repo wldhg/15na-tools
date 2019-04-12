@@ -1,14 +1,14 @@
-# Cross Valid Learner Configuration Store
+# Cross Validation Learner Configuration
 
 ### Packet Details ###
-PKT_HZ = 4000
+PKT_HZ = 4000  # pps (packets-per-second)
 PKT_COLUMNS = 90  # Get first {PKT_COLUMNS} columns of each packet data
-WINDOW_SIZE = PKT_HZ  # How many packets in one detection
-SLIDE_SIZE = int(PKT_HZ / 5)  # Packet interval in learning (Window-making interval)
+WINDOW_SIZE = int(PKT_HZ * 0.5)  # How many packets in one detection; depends on pps and the length of time of the action
+SLIDE_SIZE = int(WINDOW_SIZE / 5)  # Packet interval in learning (Window-making interval)
 THRESHOLD = 60  # If specific action continues after [WINDOW_SIZE * THRESHOLD / 100], that window will be recognized as that action
 
 ### Actions ###
-ACTIONS = ["sitdown"]
+ACTIONS = ["sitdown", "standup", "tobad", "togood"]
 
 ### Learning Parameters ###
 LEARNING_RATE = 0.0001
@@ -23,7 +23,7 @@ N_STEPS = 500  # (Fixed) timesteps
 N_HIDDEN = 200  # hidden layer num of features original 200
 N_CLASSES = len(ACTIONS) + 1  # (Fixed) All actions + "No Activity"
 N_VALID_CLASSES = len(ACTIONS)  # (Fixed) All actions
-USE_NOACTIVITY = False
+USE_NOACTIVITY = False  # Set "True" will include NoActivity windows in learning
 
 ### Path ###
 SOURCE_DIR = "./Dataset/"
