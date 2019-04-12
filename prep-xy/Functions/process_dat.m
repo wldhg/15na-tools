@@ -8,6 +8,9 @@ function ret = process_dat(fn, pn)
     % Extract CSI information for each packet
     fprintf('Have CSI for %d packets\n', length(raw_data));
 
+    if length(raw_data) > 0
+        fprintf(raw_data{1}.Ntx + "x" + raw_data{1}.Nrx + " MIMO log found.\n");
+    end
     % zeros(CSI data length, antenna, antenna, subcarriers (groupped by Intel 5300))
     csi = zeros(length(raw_data), raw_data{1}.Ntx, raw_data{1}.Nrx, 30);
     timestamp = zeros(1, length(raw_data));
