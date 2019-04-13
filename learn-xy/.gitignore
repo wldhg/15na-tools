@@ -122,6 +122,7 @@ Output_*/
 Log_*/
 _study*.ipynb
 Untitled*.ipynb
+Keras-Copy*.ipynb
 
 # VS Code
 .vscode

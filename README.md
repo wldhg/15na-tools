@@ -43,9 +43,10 @@ All results will be saved on the same directory of input file.
 
 On step 4 above, if you selected multiple `.csv` and `.y` files, the name of `.csv` files and `y` file must be matched following below rules.
 
+-   *csi_(Name)**.csv*** `does be matched` with *(Name).**y***.
 -   *(Name A)**.csv*** `does not be matched` with *(Name B).**y***.
 -   *(Name)**.csv*** `does not be matched` with *(Name).**y***.
--   *(Name)**.dat.csv*** `does be matched` with *(Name).**y***.
+
 
 ## `learn-xy`
 

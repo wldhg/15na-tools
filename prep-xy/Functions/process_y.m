@@ -2,13 +2,13 @@ function ret = process_y(CSVFile, CSVPath, YFile, YPath)
     fprintf('Reading CSV and Y file...\n');
     csi = csvread(strcat(CSVPath, CSVFile));
     y_raw = csvread(strcat(YPath, YFile));
-    
+
     fprintf('Initializing converted y values...\n');
     y = zeros(length(csi), 2);
     for idx = 1:length(csi)
         y(idx, :) = [csi(idx, 1) 0];
     end
-    
+
     fprintf('Converting y values...\n');
     c_idx_saved = 1;
     for idx = 1:size(y_raw, 1)
@@ -28,8 +28,9 @@ function ret = process_y(CSVFile, CSVPath, YFile, YPath)
         end
     end
     fprintf('Converting finished!\n');
-    
+
     fprintf('Saving converted file...\n');
-    dlmwrite([char(YPath), char(YFile), '.csv'], y, 'delimiter', ',', 'precision', 10);
+    YFileWOy = strrep(YFile, '.y', '')
+    dlmwrite([char(YPath), 'action_', char(YFileWOy), '.csv'], y, 'delimiter', ',', 'precision', 10);
     fprintf('Successfully converted y to csv.\n');
 end

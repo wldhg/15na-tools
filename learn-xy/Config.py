@@ -13,14 +13,14 @@ ACTIONS = ["sitdown", "standup", "tobad", "togood"]
 ### Learning Parameters ###
 LEARNING_RATE = 0.0001
 N_ITERATIONS = 2000  # epoch
-BATCH_SIZE = 64
+BATCH_SIZE = 200
 
 ### Learning Details ###
 KFOLD = 10
 N_SKIPROW = 2
 N_INPUT = PKT_COLUMNS  # (Fixed) WiFi activity data input (img shape: PKT_COLUMNS * WINDOW_SIZE)
 N_STEPS = 500  # (Fixed) timesteps
-N_HIDDEN = 200  # hidden layer num of features original 200
+N_HIDDEN = 400  # hidden layer num of features original 200
 N_CLASSES = len(ACTIONS) + 1  # (Fixed) All actions + "No Activity"
 N_VALID_CLASSES = len(ACTIONS)  # (Fixed) All actions
 USE_NOACTIVITY = False  # Set "True" will include NoActivity windows in learning
