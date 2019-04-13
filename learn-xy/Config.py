@@ -8,20 +8,20 @@ SLIDE_SIZE = int(WINDOW_SIZE / 5)  # Packet interval in learning (Window-making 
 THRESHOLD = 60  # If specific action continues after [WINDOW_SIZE * THRESHOLD / 100], that window will be recognized as that action
 
 ### Actions ###
-ACTIONS = ["sitdown", "standup", "tobad", "togood"]
+ACTIONS = ["sitdown", "standup", "tobad-a", "tobad-b", "togood-a", "togood-b"]
 
 ### Learning Parameters ###
 LEARNING_RATE = 0.0001
-N_ITERATIONS = 2000  # epoch
-BATCH_SIZE = 200
+N_ITERATIONS = 700  # epoch
+BATCH_SIZE = 100
 
 ### Learning Details ###
 KFOLD = 10
 N_SKIPROW = 2
 N_INPUT = PKT_COLUMNS  # (Fixed) WiFi activity data input (img shape: PKT_COLUMNS * WINDOW_SIZE)
 N_STEPS = 500  # (Fixed) timesteps
-N_HIDDEN = 400  # hidden layer num of features original 200
-N_CLASSES = len(ACTIONS) + 1  # (Fixed) All actions + "No Activity"
+N_HIDDEN = 420  # hidden layer num of features original 200
+N_CLASSES = len(ACTIONS) + 4  # (Fixed) All actions + "No Activity"
 N_VALID_CLASSES = len(ACTIONS)  # (Fixed) All actions
 USE_NOACTIVITY = False  # Set "True" will include NoActivity windows in learning
 
