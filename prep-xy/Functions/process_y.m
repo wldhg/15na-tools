@@ -11,7 +11,7 @@ function ret = process_y(CSVFile, CSVPath, YFile, YPath)
     
     fprintf('Converting y values...\n');
     c_idx_saved = 1;
-    for idx = 1:length(y_raw)
+    for idx = 1:size(y_raw, 1)
         for c_idx = c_idx_saved:length(csi)
             if y(c_idx, 1) >= y_raw(idx, 2)
                 c_idx_saved = c_idx;

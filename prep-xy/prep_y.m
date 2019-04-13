@@ -10,10 +10,10 @@ if isa(CSVFile, 'cell') & isa(YFile, 'cell') % Multiple files selected
     if length(CSVFile) ~= length(YFile) % The number of CSV & Y files not matching
         error('Please select the same number of files for CSV & Y');
     else
-        CSVFile = sortrows(CSVFile);
-        YFile = sortrows(YFile);
+        CSVFile = sortrows(CSVFile');
+        YFile = sortrows(YFile');
         for idx = 1:length(CSVFile)
-            fprintf('Processing ' + CSVFile{idx} + ' & ' + YFile{idx} + '.\n');
+            fprintf("Processing " + CSVFile{idx} + " & " + YFile{idx} + ".\n");
             datName = strrep(CSVFile{idx}, '.dat.csv', '');
             yName = strrep(YFile{idx}, '.y', '');
             if (datName ~= yName) % File name not matching
@@ -24,7 +24,7 @@ if isa(CSVFile, 'cell') & isa(YFile, 'cell') % Multiple files selected
         end
     end
 elseif size(CSVFile) ~= 0 & size(YFile) ~= 0 % One file selected
-    fprintf('Processing ' + CSVFile + ' & ' + YFile + '.\n');
+    fprintf("Processing " + CSVFile + " & " + YFile + ".\n");
     process_y(CSVFile, CSVPath, YFile, YPath);
 elseif size(YFile) ~= 0
     error('No CSV file (from .dat) is selected');
