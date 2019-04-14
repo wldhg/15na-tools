@@ -17,7 +17,7 @@ BATCH_SIZE = 64
 
 ### Learning Details ###
 KFOLD = 7
-N_SKIPROW = 0
+N_SKIPROW = 4
 N_INPUT = PKT_COLUMNS  # (Fixed) WiFi activity data input (img shape: PKT_COLUMNS * WINDOW_SIZE)
 N_STEPS = 500  # (Fixed) timesteps
 N_HIDDEN = 540  # hidden layer num of features original 200
