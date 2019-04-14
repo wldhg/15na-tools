@@ -12,7 +12,7 @@ ACTIONS = ["sitdown", "standup", "tobad-a", "tobad-b", "togood-a", "togood-b"]
 
 ### Learning Parameters ###
 LEARNING_RATE = 0.0001
-N_ITERATIONS = 1024  # epoch
+N_ITERATIONS = 352  # epoch
 BATCH_SIZE = 64
 
 ### Learning Details ###
