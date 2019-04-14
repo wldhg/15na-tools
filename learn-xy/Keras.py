@@ -52,8 +52,10 @@ lstm.add_loss(1e-8)
 adam = ko.Adam(lr=conf.LEARNING_RATE, amsgrad=True)
 model = km.Sequential()
 model.add(lstm)
-model.add(kl.Dense(
-    conf.USE_NOACTIVITY and conf.N_CLASSES or conf.N_VALID_CLASSES, activation="softmax"))
+model.add(
+    kl.Dense(
+        conf.USE_NOACTIVITY and conf.N_CLASSES or conf.N_VALID_CLASSES,
+        activation="softmax"))
 model.compile(
     loss="categorical_crossentropy", optimizer=adam, metrics=["accuracy"])
 
@@ -106,7 +108,9 @@ for i in range(conf.KFOLD):
 
     # Setup Keras Checkpoint
     checkpoint = kc.ModelCheckpoint(
-        outputDir + "Checkpoint_K" + str(i) + "_EPOCH{epoch}_ACC{val_acc:.4f}.h5", period=25)
+        outputDir + "Checkpoint_K" + str(i) +
+        "_EPOCH{epoch}_ACC{val_acc:.4f}.h5",
+        period=25)
 
     # Fit model (learn)
     print(
