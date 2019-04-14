@@ -169,7 +169,8 @@ def getCSV():
             xxRaw[str(b)] = xxRaw[str(b)].reshape(
                 len(xxRaw[str(b)]), conf.WINDOW_SIZE, conf.PKT_COLUMNS)
             # Fit to 500 Hz (conf.N_STEPS) to avoid memory error (Currently disabled)
-            xByAction[str(b)] = xxRaw[str(b)]  # [:, ::int(conf.PKT_HZ / conf.N_STEPS), :90]
+            xByAction[str(b)] = xxRaw[str(
+                b)]  # [:, ::int(conf.PKT_HZ / conf.N_STEPS), :90]
             yByAction[str(b)] = yyRaw[str(b)]
             print("[3 / 4] Reshaping", str(b), "finished...", "xx=",
                   xByAction[str(b)].shape, "yy=", yByAction[str(b)].shape)
@@ -185,32 +186,39 @@ def getCSV():
         for b in conf.ACTIONS:
             print("[1 / 4] Loading CSV data about", str(b), "...")
 
+            csiFile = conf.MERGED_PATH.format(
+                conf.WINDOW_SIZE, conf.PKT_COLUMNS, conf.THRESHOLD, 'csi',
+                str(b))
+            actionFile = conf.MERGED_PATH.format(
+                conf.WINDOW_SIZE, conf.PKT_COLUMNS, conf.THRESHOLD, 'action',
+                str(b))
+
             # If {conf.N_SKIPROW} defined, skip some indexes
             skipIndex = []
             if conf.N_SKIPROW > 0:
-                nLines = sum(1 for lines in open(
-                    conf.MERGED_PATH.format(conf.WINDOW_SIZE, conf.PKT_COLUMNS,
-                                            conf.THRESHOLD, 'csi', str(b))))
+                nLines = sum(1 for lines in open(csiFile))
                 skipIndex = [
                     x for x in range(1, nLines) if x % conf.N_SKIPROW != 0
                 ]
 
-            # Load CSVs
-            xx = np.array(
-                pd.read_csv(
-                    conf.MERGED_PATH.format(conf.WINDOW_SIZE, conf.PKT_COLUMNS,
-                                            conf.THRESHOLD, 'csi', str(b)),
-                    header=None,
-                    skiprows=skipIndex))
-            yy = np.array(
-                pd.read_csv(
-                    conf.MERGED_PATH.format(conf.WINDOW_SIZE, conf.PKT_COLUMNS,
-                                            conf.THRESHOLD, 'action', str(b)),
-                    header=None,
-                    skiprows=skipIndex))
+                # Load CSVs
+                xx = np.array(
+                    pd.read_csv(csiFile, header=None, skiprows=skipIndex))
+                yy = np.array(
+                    pd.read_csv(actionFile, header=None, skiprows=skipIndex))
 
-            xxRaw[str(b)] = xx
-            yyRaw[str(b)] = yy
+                xxRaw[str(b)] = xx
+                yyRaw[str(b)] = yy
+
+            # Or directly load using csv reader
+            else:
+                # Load CSVs
+                rawXX = [[float(cell) for cell in line]
+                         for line in csv.reader(open(csiFile, "r"))]
+                rawYY = [[int(cell) for cell in line]
+                         for line in csv.reader(open(actionFile, "r"))]
+                xxRaw[str(b)] = np.array(rawXX)
+                yyRaw[str(b)] = np.array(rawYY)
 
             print("[1 / 4] Importing", str(b), "finished...", "xx=",
                   xxRaw[str(b)].shape, "yy=", yyRaw[str(b)].shape)
@@ -230,7 +238,8 @@ def getCSV():
             xxRaw[str(b)] = xxRaw[str(b)].reshape(
                 len(xxRaw[str(b)]), conf.WINDOW_SIZE, conf.PKT_COLUMNS)
             # Fit to 500 Hz (conf.N_STEPS) to avoid memory error (Currently disabled)
-            xByAction[str(b)] = xxRaw[str(b)]  # [:, ::int(conf.PKT_HZ / conf.N_STEPS), :90]
+            xByAction[str(b)] = xxRaw[str(
+                b)]  # [:, ::int(conf.PKT_HZ / conf.N_STEPS), :90]
             yByAction[str(b)] = yyRaw[str(b)]
             print("[3 / 4] Reshaping", str(b), "finished...", "xx=",
                   xByAction[str(b)].shape, "yy=", yByAction[str(b)].shape)
