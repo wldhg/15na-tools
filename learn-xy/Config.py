@@ -8,7 +8,7 @@ SLIDE_SIZE = int(WINDOW_SIZE / 5)  # Packet interval in learning (Window-making 
 THRESHOLD = 60  # If specific action continues after [WINDOW_SIZE * THRESHOLD / 100], that window will be recognized as that action
 
 ### Actions ###
-ACTIONS = ["sitdown", "standup", "tobad-a", "tobad-b", "togood-a", "togood-b"]
+ACTIONS = ["wakeup", "syncope"]
 
 ### Learning Parameters ###
 LEARNING_RATE = 0.0001

@@ -1,4 +1,4 @@
-# SEA Tools
+# Syaa Tools
 
 This repository includes codomain (for CSI data) maker, CSI(.dat) to CSV converter, and RNN learner for data.\
 `prep-xy` directory is partially based on [ermongroup/Wifi_Activity_Recognition](https://github.com/ermongroup/Wifi_Activity_Recognition).

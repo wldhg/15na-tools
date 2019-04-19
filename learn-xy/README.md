@@ -1,4 +1,4 @@
-# SEA Tools - `learn-xy`
+# Syaa Tools - `learn-xy`
 
 ### Required version & Packages
 

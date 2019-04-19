@@ -1,12 +1,12 @@
 {
-  "name": "sea-tools-make-y",
-  "description": "Y-making tool for SEA",
+  "name": "syaa-tools-make-y",
+  "description": "Y-making tool for Syaa",
   "version": "1.1.0",
   "main": "make-y.js",
   "author": "widh",
   "license": "MIT",
   "private": false,
-  "repository": "github:widh/sea-tools",
+  "repository": "github:widh/syaa-tools",
   "devDependencies": {
     "eslint": "^5.16.0",
     "eslint-config-standard": "^12.0.0",
