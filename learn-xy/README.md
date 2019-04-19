@@ -1,4 +1,4 @@
-# POSCA Tools - `learn-xy`
+# SEA Tools - `learn-xy`
 
 ### Required version & Packages
 
