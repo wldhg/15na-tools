@@ -30,7 +30,7 @@ function ret = process_y(CSVFile, CSVPath, YFile, YPath)
     fprintf('Converting finished!\n');
 
     fprintf('Saving converted file...\n');
-    YFileWOy = strrep(YFile, '.y', '')
+    YFileWOy = strrep(YFile, '.y', '');
     dlmwrite([char(YPath), 'action_', char(YFileWOy), '.csv'], y, 'delimiter', ',', 'precision', 10);
     fprintf('Successfully converted y to csv.\n');
 end
