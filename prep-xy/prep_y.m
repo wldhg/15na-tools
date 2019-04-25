@@ -15,7 +15,7 @@ if isa(CSVFile, 'cell') & isa(YFile, 'cell') % Multiple files selected
         for idx = 1:length(CSVFile)
             fprintf("Processing " + CSVFile{idx} + " & " + YFile{idx} + ".\n");
             datName = strrep(CSVFile{idx}, '.csv', '');
-            datName = strrpe(datName, 'csi_', '');
+            datName = strrep(datName, 'csi_', '');
             yName = strrep(YFile{idx}, '.y', '');
             if (datName ~= yName) % File name not matching
                 error('Please name CSV files and Y files equally.');

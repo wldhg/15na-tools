@@ -88,7 +88,7 @@ function ret = process_dat(fn, pn)
     end
 
     fprintf('[6] Saving CSV\n');
-    fnWOdat = sttrep(fn, '.dat', '');
+    fnWOdat = strrep(fn, '.dat', '');
     dlmwrite([char(pn), 'csi_', char(fnWOdat), '.csv'], horzcat(timestamp, temp), 'delimiter', ',', 'precision', 10);
     fprintf('Successfully converted to CSV.\n');
 end
