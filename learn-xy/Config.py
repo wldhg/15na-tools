@@ -3,21 +3,21 @@
 ### Packet Details ###
 PKT_HZ = 4000  # pps (packets-per-second)
 PKT_COLUMNS = 90  # Get first {PKT_COLUMNS} columns of each packet data
-WINDOW_SIZE = int(PKT_HZ * 0.5)  # How many packets in one detection; depends on pps and the length of time of the action
+WINDOW_SIZE = int(PKT_HZ * 0.3)  # How many packets in one detection; depends on pps and the length of time of the action
 SLIDE_SIZE = int(WINDOW_SIZE / 5)  # Packet interval in learning (Window-making interval)
-THRESHOLD = 60  # If specific action continues after [WINDOW_SIZE * THRESHOLD / 100], that window will be recognized as that action
+THRESHOLD = 70  # If specific action continues after [WINDOW_SIZE * THRESHOLD / 100], that window will be recognized as that action
 
 ### Actions ###
-ACTIONS = ["wakeup", "syncope"]
+ACTIONS = ["enh1", "enh2", "syncope"]
 
 ### Learning Parameters ###
 LEARNING_RATE = 0.0001
-N_ITERATIONS = 352  # epoch
+N_ITERATIONS = 512  # epoch
 BATCH_SIZE = 64
 
 ### Learning Details ###
-KFOLD = 7
-N_SKIPROW = 4
+KFOLD = 5
+N_SKIPROW = 0
 N_INPUT = PKT_COLUMNS  # (Fixed) WiFi activity data input (img shape: PKT_COLUMNS * WINDOW_SIZE)
 N_STEPS = 500  # (Fixed) timesteps
 N_HIDDEN = 540  # hidden layer num of features original 200
