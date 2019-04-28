@@ -115,7 +115,7 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# POSCA
+# Syaa
 Dataset/
 Input_*/
 Output_*/
@@ -123,6 +123,7 @@ Log_*/
 _study*.ipynb
 Untitled*.ipynb
 Keras-Copy*.ipynb
+*.csv
 
 # VS Code
 .vscode

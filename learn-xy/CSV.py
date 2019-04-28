@@ -10,75 +10,88 @@ import pandas as pd
 import Config as conf
 
 
-def mergeCSVOfAction(xPath, yPath):
+def getFloatRawCSV(filePath):
+    return [[float(cell) for cell in line]
+            for line in csv.reader(open(filePath, "r"))]
+
+
+def getIntRawCSV(filePath):
+    return [[int(cell) for cell in line]
+            for line in csv.reader(open(filePath, "r"))]
+
+
+def mergeCSVOfAction(xPath="", yPath=""):
 
     xx = np.empty([0, conf.WINDOW_SIZE, conf.PKT_COLUMNS], float)
     yy = np.empty([0, conf.N_CLASSES], float)
 
     # Process X
-    xCSVPaths = sorted(glob.glob(xPath))
-    for csvFile in xCSVPaths:
-        print("Processing X: ", csvFile)
+    if len(xPath) > 0:
+        xCSVPaths = sorted(glob.glob(xPath))
+        if len(xCSVPaths) > 0:
+            for csvFile in xCSVPaths:
+                print("Processing X: ", csvFile)
 
-        # Read CSV and prepare temporary variables
-        rawCSV = [[float(cell) for cell in line]
-                  for line in csv.reader(open(csvFile, "r"))]
-        csvData = np.array(rawCSV)
-        partialXX = np.empty([0, conf.WINDOW_SIZE, conf.PKT_COLUMNS], float)
+                # Read CSV and prepare temporary variables
+                rawCSV = getFloatRawCSV(csvFile)
+                csvData = np.array(rawCSV)
+                partialXX = np.empty(
+                    [0, conf.WINDOW_SIZE, conf.PKT_COLUMNS], float)
 
-        # Cut data to fit window and organize them
-        i = 0
-        while i <= (len(csvData) + 1 - 2 * conf.WINDOW_SIZE):
-            # Cut 1th to {conf.PKT_COLUMNS} records of {conf.WINDOW_SIZE} packets
-            window = np.dstack(
-                np.array(
-                    csvData[i:i + conf.WINDOW_SIZE, 1:1 + conf.PKT_COLUMNS]).T)
-            partialXX = np.concatenate((partialXX, window), axis=0)
-            # Jump to the start point of next window
-            i += conf.SLIDE_SIZE
+                # Cut data to fit window and organize them
+                i = 0
+                while i <= (len(csvData) + 1 - 2 * conf.WINDOW_SIZE):
+                    # Cut 1th to {conf.PKT_COLUMNS} records of {conf.WINDOW_SIZE} packets
+                    window = np.dstack(
+                        np.array(
+                            csvData[i:i + conf.WINDOW_SIZE, 1:1 + conf.PKT_COLUMNS]).T)
+                    partialXX = np.concatenate((partialXX, window), axis=0)
+                    # Jump to the start point of next window
+                    i += conf.SLIDE_SIZE
 
-        xx = np.concatenate((xx, partialXX), axis=0)
+                xx = np.concatenate((xx, partialXX), axis=0)
 
-    # Merge all packets in window to one row
-    xx = xx.reshape(len(xx), -1)
+            # Merge all packets in window to one row
+            xx = xx.reshape(len(xx), -1)
 
     # Process Y
-    yCSVPaths = sorted(glob.glob(yPath))
-    for csvFile in yCSVPaths:
-        print("Processing Y: ", csvFile)
+    if len(yPath) > 0:
+        yCSVPaths = sorted(glob.glob(yPath))
+        if len(yCSVPaths) > 0:
+            for csvFile in yCSVPaths:
+                print("Processing Y: ", csvFile)
 
-        # Read CSV and prepare temporary variables
-        rawCSV = [[float(cell) for cell in line]
-                  for line in csv.reader(open(csvFile, "r"))]
-        csvData = np.array(rawCSV)
-        partialYY = np.zeros(
-            ((len(csvData) + 1 - 2 * conf.WINDOW_SIZE) // conf.SLIDE_SIZE + 1,
-             conf.N_CLASSES))
+                # Read CSV and prepare temporary variables
+                rawCSV = getFloatRawCSV(csvFile)
+                csvData = np.array(rawCSV)
+                partialYY = np.zeros(
+                    ((len(csvData) + 1 - 2 * conf.WINDOW_SIZE) // conf.SLIDE_SIZE + 1,
+                     conf.N_CLASSES))
 
-        # Parse data and convert them
-        i = 0
-        while i <= (len(csvData) + 1 - 2 * conf.WINDOW_SIZE):
-            # Cut 1th to {conf.WINDOW_SIZE} packets
-            window = np.stack(np.array(csvData[i:i + conf.WINDOW_SIZE, 1]))
+                # Parse data and convert them
+                i = 0
+                while i <= (len(csvData) + 1 - 2 * conf.WINDOW_SIZE):
+                    # Cut 1th to {conf.WINDOW_SIZE} packets
+                    window = np.stack(np.array(csvData[i:i + conf.WINDOW_SIZE, 1]))
 
-            # Count each classes
-            yRawCount = np.zeros(conf.N_CLASSES)
-            for j in range(conf.WINDOW_SIZE):
-                yRawCount[int(window[j])] += 1
+                    # Count each classes
+                    yRawCount = np.zeros(conf.N_CLASSES)
+                    for j in range(conf.WINDOW_SIZE):
+                        yRawCount[int(window[j])] += 1
 
-            # If a class overs zeros
-            value = np.zeros(conf.N_CLASSES)
-            for j in range(1, conf.N_CLASSES):
-                if yRawCount[j] > conf.WINDOW_SIZE * conf.THRESHOLD / 100:
-                    value[j] = 1
-                    break
-            if np.sum(value) == 0:
-                value[0] = 2
-            partialYY[int(i / conf.SLIDE_SIZE), :] = value
+                    # If a class overs zeros
+                    value = np.zeros(conf.N_CLASSES)
+                    for j in range(1, conf.N_CLASSES):
+                        if yRawCount[j] > conf.WINDOW_SIZE * conf.THRESHOLD / 100:
+                            value[j] = 1
+                            break
+                    if np.sum(value) == 0:
+                        value[0] = 2
+                    partialYY[int(i / conf.SLIDE_SIZE), :] = value
 
-            i += conf.SLIDE_SIZE
+                    i += conf.SLIDE_SIZE
 
-        yy = np.concatenate((yy, partialYY), axis=0)
+                yy = np.concatenate((yy, partialYY), axis=0)
 
     # Print the results
     print(xx.shape, yy.shape)
@@ -213,10 +226,8 @@ def getCSV():
             # Or directly load using csv reader
             else:
                 # Load CSVs
-                rawXX = [[float(cell) for cell in line]
-                         for line in csv.reader(open(csiFile, "r"))]
-                rawYY = [[int(cell) for cell in line]
-                         for line in csv.reader(open(actionFile, "r"))]
+                rawXX = getFloatRawCSV(csiFile)
+                rawYY = getFloatRawCSV(actionFile)
                 xxRaw[str(b)] = np.array(rawXX)
                 yyRaw[str(b)] = np.array(rawYY)
 

@@ -1,2 +1,4 @@
 # For test
 test/
+*.csv
+*.y

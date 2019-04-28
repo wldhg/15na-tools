@@ -108,8 +108,8 @@ for i in range(conf.KFOLD):
 
     # Setup Keras Checkpoint
     checkpoint = kc.ModelCheckpoint(
-        outputDir + "Checkpoint_K" + str(i) +
-        "_EPOCH{epoch}_ACC{val_acc:.4f}.h5",
+        outputDir + "Checkpoint_K" + str(i + 1) +
+        "_EPOCH{epoch}_ACC{val_acc:.6f}.h5",
         period=25)
 
     # Fit model (learn)
