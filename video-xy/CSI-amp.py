@@ -20,7 +20,6 @@ if __name__ == "__main__":
     print("[3/4] Creating graphs and converting to cv format...")
     frames = []
     barIdx = 0
-    plt.ylim(0, 30)
     with pb.ProgressBar(max_value=frameLen) as bar:
         for p in frameIdx:
             pltLegend = []
@@ -32,6 +31,7 @@ if __name__ == "__main__":
                 plt.xlabel('Subcarriers Group', figure=pltFigure)
                 plt.ylabel('Amplitude CSI [db]', figure=pltFigure)
             pltFigure.legend(pltLegend)
+            plt.ylim(0, 30)
             pltFigure.savefig(pltImage, format='png')
             plt.close(pltFigure)
             pltImage.seek(0)

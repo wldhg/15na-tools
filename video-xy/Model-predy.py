@@ -12,12 +12,12 @@ from common import *
 
 # Define common function
 def createGraph(scores):
-    plt.ylim(0, 1)
     pltLegend = []
     pltFigure = plt.figure()
     pltImage = BytesIO()
     plt.bar(conf.ACTIONS, scores, figure=pltFigure)
     plt.ylabel('Prediction Accuracy', figure=pltFigure)
+    plt.ylim(0, 1)
     pltFigure.savefig(pltImage, format='png')
     plt.close(pltFigure)
     pltImage.seek(0)
