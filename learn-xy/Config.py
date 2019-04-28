@@ -11,7 +11,7 @@ THRESHOLD = 85  # If specific action continues after [WINDOW_SIZE * THRESHOLD / 
 ACTIONS = ["enh1", "enh2", "syncope", "noa", "walking"]
 
 ### Learning Parameters ###
-LEARNING_RATE = 0.0001
+LEARNING_RATE = 0.000075
 N_ITERATIONS = 512  # epoch
 BATCH_SIZE = 64
 
