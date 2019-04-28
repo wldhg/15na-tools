@@ -47,7 +47,7 @@ print("    " + outputDir)
 lstm = kl.LSTM(
     conf.N_HIDDEN,
     unit_forget_bias=True,
-    input_shape=(conf.N_STEPS, conf.N_INPUT))
+    input_shape=(conf.WINDOW_SIZE, conf.N_INPUT))
 lstm.add_loss(1e-8)
 adam = ko.Adam(lr=conf.LEARNING_RATE, amsgrad=True)
 model = km.Sequential()
@@ -114,7 +114,7 @@ for i in range(conf.KFOLD):
 
     # Fit model (learn)
     print(
-        str(i) + " th fitting started. Endpoint is " + str(conf.KFOLD) +
+        str(i + 1) + " th fitting started. Endpoint is " + str(conf.KFOLD) +
         " th.")
 
     model.fit(

@@ -19,7 +19,6 @@ BATCH_SIZE = 64
 KFOLD = 5
 N_SKIPROW = 0
 N_INPUT = PKT_COLUMNS  # (Fixed) WiFi activity data input (img shape: PKT_COLUMNS * WINDOW_SIZE)
-N_STEPS = 500  # (Fixed) timesteps
 N_HIDDEN = 540  # hidden layer num of features original 200
 N_CLASSES = len(ACTIONS) + 1  # (Fixed) All actions + "No Activity"
 N_VALID_CLASSES = len(ACTIONS)  # (Fixed) All actions

@@ -168,9 +168,9 @@ def getCSV():
             print("[3 / 4] Reshaping", str(b), "...")
             xxRaw[str(b)] = xxRaw[str(b)].reshape(
                 len(xxRaw[str(b)]), conf.WINDOW_SIZE, conf.PKT_COLUMNS)
-            # Fit to 500 Hz (conf.N_STEPS) to avoid memory error (Currently disabled)
+            # Fit to 500 Hz (Currently disabled)
             xByAction[str(b)] = xxRaw[str(
-                b)]  # [:, ::int(conf.PKT_HZ / conf.N_STEPS), :90]
+                b)]  # [:, ::int(conf.PKT_HZ / 500), :90]
             yByAction[str(b)] = yyRaw[str(b)]
             print("[3 / 4] Reshaping", str(b), "finished...", "xx=",
                   xByAction[str(b)].shape, "yy=", yByAction[str(b)].shape)
@@ -237,9 +237,9 @@ def getCSV():
             print("[3 / 4] Reshaping", str(b), "...")
             xxRaw[str(b)] = xxRaw[str(b)].reshape(
                 len(xxRaw[str(b)]), conf.WINDOW_SIZE, conf.PKT_COLUMNS)
-            # Fit to 500 Hz (conf.N_STEPS) to avoid memory error (Currently disabled)
+            # Fit to 500 Hz (Currently disabled)
             xByAction[str(b)] = xxRaw[str(
-                b)]  # [:, ::int(conf.PKT_HZ / conf.N_STEPS), :90]
+                b)]  # [:, ::int(conf.PKT_HZ / 500), :90]
             yByAction[str(b)] = yyRaw[str(b)]
             print("[3 / 4] Reshaping", str(b), "finished...", "xx=",
                   xByAction[str(b)].shape, "yy=", yByAction[str(b)].shape)

@@ -116,7 +116,7 @@ dmypy.json
 .pyre/
 
 # POSCA
-Dataset/*
+Dataset/
 Input_*/
 Output_*/
 Log_*/
