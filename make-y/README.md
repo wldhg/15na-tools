@@ -1,7 +1,7 @@
-# Syaa Tools - `make-y`
+# 15na Tools - `make-y`
 
 This makes codomain for csi data.\
-IMPORTANT: I want to suggest you to use "taking-video and label later" method.
+IMPORTANT: I suggest you to use "taking-video" method.
 
 ### Prerequisites
 

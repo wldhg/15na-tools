@@ -1,12 +1,12 @@
 {
-  "name": "syaa-tools-make-y",
-  "description": "Y-making tool for Syaa",
+  "name": "15na-tools-make-y",
+  "description": "Y-making tool for 15na",
   "version": "1.1.0",
   "main": "make-y.js",
   "author": "widh",
   "license": "MIT",
   "private": false,
-  "repository": "github:widh/syaa-tools",
+  "repository": "github:widh/15na-tools",
   "devDependencies": {
     "eslint": "^5.16.0",
     "eslint-config-standard": "^12.0.0",

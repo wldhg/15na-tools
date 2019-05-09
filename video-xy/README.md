@@ -1,4 +1,4 @@
-# Syaa Tools - `video-y`
+# 15na Tools - `video-y`
 
 This tool converts your model & input to video.
 

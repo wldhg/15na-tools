@@ -1,6 +1,6 @@
-# Syaa Tools - `learn-xy`
+# 15na Tools - `learn-xy`
 
-This does learning of X and Y.
+CNN learning scripts
 
 ### Required version & Packages
 

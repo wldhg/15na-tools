@@ -1,4 +1,4 @@
-# Syaa Tools - `prep-xy`
+# 15na Tools - `prep-xy`
 
 This make proper csv files of CSI data (x) and Y (y).\
 All results will be saved on the same directory of input file.

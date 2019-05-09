@@ -1,6 +1,6 @@
-# Syaa Tools
+# 15na Tools
 
-This repository includes codomain (for CSI data) maker, CSI(.dat) to CSV converter, RNN learner for data, and data to video converter.\
+This repository includes co-domain (of CSI data) maker, CSI `.dat` to CSV converter, CNN learner for data, and data to video converter.\
 `prep-xy` directory is partially based on [ermongroup/Wifi_Activity_Recognition](https://github.com/ermongroup/Wifi_Activity_Recognition).
 
 ## **Overall Process**

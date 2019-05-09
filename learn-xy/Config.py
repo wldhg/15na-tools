@@ -9,22 +9,22 @@ MULTIPLE_INPUT = 3  # The number of Tx of MIMO
 MULTIPLE_OUTPUT = 1  # The number of Rx of MIMO
 
 ### Actions ###
-ACTIONS = ["noa", "syncope"]  # Labeled number (starts from 1) must be matched with the order of this
+ACTIONS = ["noa", "fall"]  # Labeled number (starts from 1) must be matched with the order of this
 USE_NOACTIVITY = False  # Set "True" will include NoActivity windows in learning
 USE_CUSTOM_NOACTIVITY = True  # Custom NoActivity (Not 0)
 CUSTOM_NOACTIVITY_NO = 0  # Index number of custom NoActivity action (0 to len(ACTIONS) - 1)
 
 ### Learning Parameters ###
-LEARNING_RATE = 0.00001
-N_ITERATIONS = 128  # epoch
-BATCH_SIZE = 16
+LEARNING_RATE = 0.0001
+N_ITERATIONS = 1024  # epoch
+BATCH_SIZE = 64
 
 ### Learning Details ###
 KFOLD = 11
 N_SKIPROW = 0
 N_HIDDEN = 1024  # hidden layer num of features
-USE_AMPLITUDE = False  # If true, learner will not remove amplitude from csi
-USE_PHASE = True  # If true, learner will not remove phase from csi
+USE_AMPLITUDE = True  # If true, learner will use amplitude scale
+USE_PHASE = True  # If true, learner will use phase shift
 
 ### Path ###
 SOURCE_DIR = "./Dataset/"
