@@ -18,7 +18,7 @@ This works on **Python 3.6**
 3. Put the source csv files into `Dataset` directory. Naming scheme is as below.
    If you put `['A', 'B']` in `ACTIONS`, the name of CSI data csv will be `csi_A...csv` and of Y data csv will be `action_A_...csv`.
    The important thing is that `...` part must be same. That is, `csi_A_asdf222.csv` will be matched with `action_A_asdf222.csv`.
-4. Run `Keras.py`. Or you can run `Keras.ipynb`. These two file will do same thing.
+4. Run `Run.py`. Or you can run `Run.ipynb`. These two file will do same thing.
 5. **???** ← This is what machine learning does.
 6. After this, `Output_LR..._...` directory may be created and keras checkpoint file may be in there.
 7. Also, `model.h5`, `model.yml`, `model.json` will be in there.
@@ -27,3 +27,7 @@ This works on **Python 3.6**
 ### What can I do after this process?
 
 You can do everything using your model. Enjoy it!
+
+### About DenseNet Implementation
+
+DenseNet implementation was made at [here](https://github.com/cmasch/densenet).

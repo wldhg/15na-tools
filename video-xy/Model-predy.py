@@ -31,14 +31,14 @@ assert len(sys.argv) == 4
 print("[1/7] Reading & Converting CSV ( " + sys.argv[1] + " ) ...")
 nx = getNx(sys.argv[1])
 mx, my = csv.mergeCSVOfAction(sys.argv[1])
-mx = mx.reshape(len(mx), conf.WINDOW_SIZE, conf.PKT_COLUMNS)
+mx = mx.reshape(len(mx), conf.WINDOW_SIZE, conf.N_COLUMNS)
 print("[2/7] Calculating necessary frames...")
 frameIdx = getNecessaryFrameIdx(nx)
 frameLen = len(frameIdx)
 
 # Load keras model and classify each slide
 print("[3/7] Load Keras model...")
-adam = ko.Adam(lr=conf.LEARNING_RATE, amsgrad=True)
+nadam = ko.Nadam(lr=conf.LEARNING_RATE)
 modelPropRaw = open(sys.argv[3], 'r')
 if 'json' in modelProp:
     model = km.model_from_json(modelPropRaw)
@@ -46,7 +46,7 @@ else:
     model = km.model_from_yaml(modelPropRaw)
 model.load_weights(sys.argv[2])
 model.compile(loss="categorical_crossentropy",
-              optimizer=adam, metrics=["accuracy"])
+              optimizer=nadam, metrics=["accuracy"])
 print("[4/7] Classify each slides...")
 scores = model.predict(mx)
 if conf.USE_NOACTIVITY == True:

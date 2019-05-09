@@ -2,30 +2,47 @@ import os
 import shutil
 
 import keras.callbacks as kc
-import keras.layers as kl
-import keras.models as km
 import keras.optimizers as ko
 import keras.utils as ku
 import numpy as np
-import sklearn as sk
 import sklearn.utils as sku
 
 import Config as conf
 import CSV as csv
+from DenseNet import DenseNet
 
-# Check output directory
+# Import & shuffle CSV data
+xs, ys = csv.getCSV()
+for a in conf.ACTIONS:
+    xs[a], ys[a] = sku.shuffle(xs[a], ys[a], random_state=0)
+
+# Setup Keras DenseNet Model (DenseNet-BC)
+nadam = ko.Nadam(lr=conf.LEARNING_RATE)
+model = DenseNet(
+    input_shape=(conf.WINDOW_SIZE, conf.N_COLUMNS, 1),
+    dense_blocks=5,
+    growth_rate=conf.N_FILTERS,
+    nb_classes=conf.N_VALID_CLASSES,
+    dropout_rate=0.2,
+    bottleneck=True,
+    compression=0.5,
+    weight_decay=1e-4,
+    depth=conf.DEPTH
+).build_model()
+model.compile(
+    loss="categorical_crossentropy", optimizer=nadam, metrics=["accuracy"])
+
+# Check output directory and prepare tensorboard
 outputDir = conf.OUTPUT_PATH.format(conf.LEARNING_RATE, conf.BATCH_SIZE,
-                                    conf.N_HIDDEN, "")
+                                    conf.N_FILTERS, "")
 if os.path.exists(outputDir):
     shutil.rmtree(outputDir)
 os.makedirs(outputDir)
 logDir = conf.LOG_PATH.format(conf.LEARNING_RATE, conf.BATCH_SIZE,
-                              conf.N_HIDDEN, "")
+                              conf.N_FILTERS, "")
 if os.path.exists(logDir):
     shutil.rmtree(logDir)
 os.makedirs(logDir)
-
-# Setup Keras Callbacks
 tensorboard = kc.TensorBoard(
     log_dir=logDir,
     histogram_freq=0,
@@ -38,32 +55,8 @@ print(
     "If you have tensorboard in this environment, you can type below to see the result in tensorboard:"
 )
 print("    tensorboard --logdir=" + logDir)
-
-# Notice Checkpoint Directory
 print("Keras checkpoints and final result will be saved in here:")
 print("    " + outputDir)
-
-# Setup Keras RNN Model
-lstm = kl.LSTM(
-    conf.N_HIDDEN,
-    input_shape=(conf.WINDOW_SIZE, conf.N_COLUMNS))
-lstm.add_loss(1e-8)
-adam = ko.Adam(lr=conf.LEARNING_RATE, amsgrad=True)
-model = km.Sequential()
-model.add(lstm)
-model.add(
-    kl.Dense(
-        conf.USE_NOACTIVITY and conf.N_CLASSES or conf.N_VALID_CLASSES,
-        activation="softmax"))
-model.compile(
-    loss="categorical_crossentropy", optimizer=adam, metrics=["accuracy"])
-
-# Import CSV data
-xs, ys = csv.getCSV()
-
-# Shuffle data
-for a in conf.ACTIONS:
-    xs[a], ys[a] = sku.shuffle(xs[a], ys[a], random_state=0)
 
 # Run KFold
 for i in range(conf.KFOLD):
@@ -107,9 +100,7 @@ for i in range(conf.KFOLD):
 
     # Setup Keras Checkpoint
     checkpoint = kc.ModelCheckpoint(
-        outputDir + "Checkpoint_K" + str(i + 1) +
-        "_EPOCH{epoch}_ACC{val_acc:.6f}.h5",
-        period=25)
+        outputDir + "Checkpoint_K" + str(i + 1) + "_EPOCH{epoch}_ACC{val_acc:.6f}.h5", period=conf.CP_PERIOD)
 
     # Fit model (learn)
     print(
@@ -120,12 +111,14 @@ for i in range(conf.KFOLD):
         xTrain,
         yTrain,
         batch_size=conf.BATCH_SIZE,
-        epochs=conf.N_ITERATIONS,
+        epochs=conf.N_EPOCH,
         verbose=1,
         callbacks=[tensorboard, checkpoint],
         validation_data=(xEval, yEval))  # , validation_freq=2)
+print("Epoch completed!")
 
-print("Epoch completed! Saving model & model information...")
+# Saving model
+print("Saving model & model information...")
 modelYML = model.to_yaml()
 with open(outputDir + "model.yml", "w") as yml:
     yml.write(modelYML)
