@@ -46,8 +46,7 @@ print("    " + outputDir)
 # Setup Keras RNN Model
 lstm = kl.LSTM(
     conf.N_HIDDEN,
-    unit_forget_bias=True,
-    input_shape=(conf.WINDOW_SIZE, conf.N_INPUT))
+    input_shape=(conf.WINDOW_SIZE, conf.N_COLUMNS))
 lstm.add_loss(1e-8)
 adam = ko.Adam(lr=conf.LEARNING_RATE, amsgrad=True)
 model = km.Sequential()

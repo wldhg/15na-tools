@@ -22,7 +22,7 @@ def getIntRawCSV(filePath):
 
 def mergeCSVOfAction(xPath="", yPath=""):
 
-    xx = np.empty([0, conf.WINDOW_SIZE, conf.PKT_COLUMNS], float)
+    xx = np.empty([0, conf.WINDOW_SIZE, conf.N_COLUMNS], float)
     yy = np.empty([0, conf.N_CLASSES], float)
 
     # Process X
@@ -36,15 +36,15 @@ def mergeCSVOfAction(xPath="", yPath=""):
                 rawCSV = getFloatRawCSV(csvFile)
                 csvData = np.array(rawCSV)
                 partialXX = np.empty(
-                    [0, conf.WINDOW_SIZE, conf.PKT_COLUMNS], float)
+                    [0, conf.WINDOW_SIZE, conf.N_COLUMNS], float)
 
                 # Cut data to fit window and organize them
                 i = 0
                 while i <= (len(csvData) + 1 - 2 * conf.WINDOW_SIZE):
-                    # Cut 1th to {conf.PKT_COLUMNS} records of {conf.WINDOW_SIZE} packets
+                    # Cut 1th to {conf.N_COLUMNS} records of {conf.WINDOW_SIZE} packets
                     window = np.dstack(
                         np.array(
-                            csvData[i:i + conf.WINDOW_SIZE, 1:1 + conf.PKT_COLUMNS]).T)
+                            csvData[i:i + conf.WINDOW_SIZE, conf.COL_START:conf.COL_START + conf.N_COLUMNS]).T)
                     partialXX = np.concatenate((partialXX, window), axis=0)
                     # Jump to the start point of next window
                     i += conf.SLIDE_SIZE
@@ -72,7 +72,8 @@ def mergeCSVOfAction(xPath="", yPath=""):
                 i = 0
                 while i <= (len(csvData) + 1 - 2 * conf.WINDOW_SIZE):
                     # Cut 1th to {conf.WINDOW_SIZE} packets
-                    window = np.stack(np.array(csvData[i:i + conf.WINDOW_SIZE, 1]))
+                    window = np.stack(
+                        np.array(csvData[i:i + conf.WINDOW_SIZE, 1]))
 
                     # Count each classes
                     yRawCount = np.zeros(conf.N_CLASSES)
@@ -102,7 +103,7 @@ def mergeCSVOfAction(xPath="", yPath=""):
 
 def mergeCSV():
     # Check output directory
-    mergedDir = conf.MERGED_DIR.format(conf.WINDOW_SIZE, conf.PKT_COLUMNS,
+    mergedDir = conf.MERGED_DIR.format(conf.WINDOW_SIZE, conf.N_COLUMNS,
                                        conf.THRESHOLD)
     if os.path.exists(mergedDir):
         print("Old files found. Remove them to continue...")
@@ -121,9 +122,9 @@ def mergeCSV():
         srcCSIPath = conf.SOURCE_PATH.format("csi", label)
         srcActionPath = conf.SOURCE_PATH.format("action", label)
         mergedCSIPath = conf.MERGED_PATH.format(
-            conf.WINDOW_SIZE, conf.PKT_COLUMNS, conf.THRESHOLD, "csi", label)
+            conf.WINDOW_SIZE, conf.N_COLUMNS, conf.THRESHOLD, "csi", label)
         mergedActionPath = conf.MERGED_PATH.format(
-            conf.WINDOW_SIZE, conf.PKT_COLUMNS, conf.THRESHOLD, "action",
+            conf.WINDOW_SIZE, conf.N_COLUMNS, conf.THRESHOLD, "action",
             label)
 
         # Calculate merges
@@ -157,7 +158,7 @@ def getCSV():
 
     # Check whether if input directory exists
     if not os.path.exists(
-            conf.MERGED_DIR.format(conf.WINDOW_SIZE, conf.PKT_COLUMNS,
+            conf.MERGED_DIR.format(conf.WINDOW_SIZE, conf.N_COLUMNS,
                                    conf.THRESHOLD)):
         print("Input directory not found. Calculate merged CSVs...")
         xxRaw, yyRaw = mergeCSV()
@@ -180,7 +181,7 @@ def getCSV():
 
             print("[3 / 4] Reshaping", str(b), "...")
             xxRaw[str(b)] = xxRaw[str(b)].reshape(
-                len(xxRaw[str(b)]), conf.WINDOW_SIZE, conf.PKT_COLUMNS)
+                len(xxRaw[str(b)]), conf.WINDOW_SIZE, conf.N_COLUMNS)
             # Fit to 500 Hz (Currently disabled)
             xByAction[str(b)] = xxRaw[str(
                 b)]  # [:, ::int(conf.PKT_HZ / 500), :90]
@@ -200,10 +201,10 @@ def getCSV():
             print("[1 / 4] Loading CSV data about", str(b), "...")
 
             csiFile = conf.MERGED_PATH.format(
-                conf.WINDOW_SIZE, conf.PKT_COLUMNS, conf.THRESHOLD, 'csi',
+                conf.WINDOW_SIZE, conf.N_COLUMNS, conf.THRESHOLD, 'csi',
                 str(b))
             actionFile = conf.MERGED_PATH.format(
-                conf.WINDOW_SIZE, conf.PKT_COLUMNS, conf.THRESHOLD, 'action',
+                conf.WINDOW_SIZE, conf.N_COLUMNS, conf.THRESHOLD, 'action',
                 str(b))
 
             # If {conf.N_SKIPROW} defined, skip some indexes
@@ -247,10 +248,10 @@ def getCSV():
 
             print("[3 / 4] Reshaping", str(b), "...")
             xxRaw[str(b)] = xxRaw[str(b)].reshape(
-                len(xxRaw[str(b)]), conf.WINDOW_SIZE, conf.PKT_COLUMNS)
+                len(xxRaw[str(b)]), conf.WINDOW_SIZE, conf.N_COLUMNS)
             # Fit to 500 Hz (Currently disabled)
             xByAction[str(b)] = xxRaw[str(
-                b)]  # [:, ::int(conf.PKT_HZ / 500), :90]
+                b)]  # [:, ::int(conf.PKT_HZ / 500), :conf.N_COLUMNS]
             yByAction[str(b)] = yyRaw[str(b)]
             print("[3 / 4] Reshaping", str(b), "finished...", "xx=",
                   xByAction[str(b)].shape, "yy=", yByAction[str(b)].shape)
