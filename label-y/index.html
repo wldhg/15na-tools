@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>15na Labeling Tool</title>
+    <link href="style.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="script.js"></script>
+  </head>
+  <body>
+    <header>
+      <h1>15na Labeling Tool</h1>
+    </header>
+    <main>
+      <section id="video">
+        <video id="video-element" controls></video>
+      </section>
+      <hr>
+      <section id="indicator">
+        <section id="indicator-ts">
+          <h4>Timestamp</h4>
+          <span id="indicator-ts-data"></span>
+        </section>
+        <section id="indicator-sp">
+          <h4>Startpoint</h4>
+          <span id="indicator-sp-data"></span>
+        </section>
+        <section id="indicator-rts">
+          <h4>Relative Timestamp</h4>
+          <span id="indicator-rts-data"></span>
+        </section>
+      </section>
+      <hr>
+      <section id="control">
+        <button id="control-load-video">Load Video</button>
+        <button id="control-set-sp">Set Startpoint</button>
+        <input id="control-label" type="number" min="1" value="1">
+        <button id="control-start-stop">Start</button>
+        <button id="control-save-y">
+          <a id="control-save-y-a" target="_blank">Save Y</a>
+        </button>
+      </section>
+      <section id="y">
+      </section>
+      <section id="hidden">
+        <input id="hidden-file" type="file" accept="video/*">
+      </section>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,49 @@
+html {
+  background-color: #222;
+  color: #eee;
+}
+
+body {
+  margin: 1em;
+}
+
+#video-element {
+  /* 16:9 */
+  width: auto;
+  height: calc(56.25vh - 1.125em);
+}
+
+#indicator > section {
+  display: inline-block;
+  margin-right: 20px;
+  min-width: 325px;
+}
+
+#indicator > section > span {
+  font-size: 20pt;
+  min-height: 32pt;
+  display: block;
+}
+
+#control, #control * {
+  font-size: 16pt;
+}
+
+#control-set-sp, #control-start-stop {
+  margin-right: 180px;
+}
+
+#hidden {
+  display: none;
+}
+
+#y, #y * {
+  font-size: 10pt;
+}
+
+#y span {
+  display: inline-block;
+  padding-right: 1px solid #888;
+  padding-right: 20px;
+  margin-right: 20px;
+}

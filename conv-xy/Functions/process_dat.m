@@ -1,4 +1,4 @@
-function ret = process_dat(fn, pn)
+function ret = process_dat(fn, pn, willDivide)
     raw_data = read_bf_file(strcat(pn, fn));
 
     % eliminate empty cell
@@ -14,7 +14,6 @@ function ret = process_dat(fn, pn)
     % zeros(CSI data length, antenna, antenna, subcarriers (groupped by Intel 5300))
     csi = zeros(length(raw_data), raw_data{1}.Ntx, raw_data{1}.Nrx, 30);
     timestamp = zeros(1, length(raw_data));
-    temp = [];
     fprintf('[1] Data space initialized\n');
 
     % Scaled into linear
@@ -65,6 +64,9 @@ function ret = process_dat(fn, pn)
     end
 
     fprintf('[5] Merging data\n');
+    saveFactor = 1;
+    fnWOdat = strrep(fn, '.dat', '');
+    temp = [];
     for pidx = 1:length(raw_data)
         catenAmp = reshape(squeeze(csi_amp(1,:,:,pidx))', [1, 90]);
         catenPhase = reshape(squeeze(csi_phase_calibrated(1,:,:,pidx))', [1, 90]);
@@ -77,7 +79,17 @@ function ret = process_dat(fn, pn)
         temp = [temp;horzcat(catenAmp, catenPhase)];
         if mod(pidx, 100) == 0 && pidx ~= 0
             if mod(pidx, 10000) == 0
-                fprintf('*' + string(pidx / 1000) + 'k\n');
+                fprintf('*' + string(pidx / 1000) + 'k');
+                if willDivide == true
+                    fprintf(' -> Saving Partial CSV... ');
+                    tempTimestamp = timestamp(pidx - 9999:pidx);
+                    dlmwrite([char(pn), 'csi_', char(fnWOdat), '_', int2str(saveFactor), '.csv'], horzcat(tempTimestamp, temp), 'delimiter', ',', 'precision', 8);
+                    fprintf('OK\n');
+                    saveFactor = saveFactor + 1;
+                    temp = [];
+                else
+                    fprintf('\n');
+                end
             else
                 fprintf('.');
             end
@@ -87,8 +99,12 @@ function ret = process_dat(fn, pn)
         fprintf('\n');
     end
 
-    fprintf('[6] Saving CSV\n');
-    fnWOdat = strrep(fn, '.dat', '');
-    dlmwrite([char(pn), 'csi_', char(fnWOdat), '.csv'], horzcat(timestamp, temp), 'delimiter', ',', 'precision', 10);
+    fprintf('[6] Final: Saving CSV\n');
+    if willDivide == true
+        tempTimestamp = timestamp(pidx - mod(pidx, 10000) + 1:pidx);
+        dlmwrite([char(pn), 'csi_', char(fnWOdat), '_', int2str(saveFactor), '.csv'], horzcat(tempTimestamp, temp), 'delimiter', ',', 'precision', 8);
+    else
+        dlmwrite([char(pn), 'csi_', char(fnWOdat), '.csv'], horzcat(timestamp, temp), 'delimiter', ',', 'precision', 8);
+    end
     fprintf('Successfully converted to CSV.\n');
 end
