@@ -83,7 +83,7 @@ function ret = process_dat(fn, pn, willDivide)
                 if willDivide == true
                     fprintf(' -> Saving Partial CSV... ');
                     tempTimestamp = timestamp(pidx - 9999:pidx);
-                    dlmwrite([char(pn), 'csi_', char(fnWOdat), '_', int2str(saveFactor), '.csv'], horzcat(tempTimestamp, temp), 'delimiter', ',', 'precision', 8);
+                    dlmwrite([char(pn), 'csi_', char(fnWOdat), '_', num2str(saveFactor, '%03d'), '.csv'], horzcat(tempTimestamp, temp), 'delimiter', ',', 'precision', 8);
                     fprintf('OK\n');
                     saveFactor = saveFactor + 1;
                     temp = [];
@@ -102,7 +102,7 @@ function ret = process_dat(fn, pn, willDivide)
     fprintf('[6] Final: Saving CSV\n');
     if willDivide == true
         tempTimestamp = timestamp(pidx - mod(pidx, 10000) + 1:pidx);
-        dlmwrite([char(pn), 'csi_', char(fnWOdat), '_', int2str(saveFactor), '.csv'], horzcat(tempTimestamp, temp), 'delimiter', ',', 'precision', 8);
+        dlmwrite([char(pn), 'csi_', char(fnWOdat), '_', num2str(saveFactor, '%03d'), '.csv'], horzcat(tempTimestamp, temp), 'delimiter', ',', 'precision', 8);
     else
         dlmwrite([char(pn), 'csi_', char(fnWOdat), '.csv'], horzcat(timestamp, temp), 'delimiter', ',', 'precision', 8);
     end

@@ -16,7 +16,7 @@ This works on **Python 3.6**
 1. First, make directory named `Dataset` in `learn-xy` directory.
 2. Modify `ACTIONS` of `Config.py`. You can modify other parameters now. If you want to change some parameters after this step, you must restart from step 3.
 3. Put the source csv files into `Dataset` directory. Naming scheme is as below.
-   If you put `['A', 'B']` in `ACTIONS`, the name of CSI data csv will be `csi_A...csv` and of Y data csv will be `action_A_...csv`.
+   If you put `['A', 'B']` in `SOURCES`, the name of CSI data csv will be `csi_A...csv` and of Y data csv will be `action_A_...csv`.
    The important thing is that `...` part must be same. That is, `csi_A_asdf222.csv` will be matched with `action_A_asdf222.csv`.
 4. Run `Run.py`. Or you can run `Run.ipynb`. These two file will do same thing.
 5. **???** ← This is what machine learning does.

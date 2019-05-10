@@ -12,9 +12,8 @@ import CSV as csv
 from DenseNet import DenseNet
 
 # Import & shuffle CSV data
-xs, ys = csv.getCSV()
-for a in conf.ACTIONS:
-    xs[a], ys[a] = sku.shuffle(xs[a], ys[a], random_state=0)
+xx, yy = csv.getCSV()
+xx, yy = sku.shuffle(xx, yy, random_state=0)
 
 # Setup Keras DenseNet Model (DenseNet-BC)
 nadam = ko.Nadam(lr=conf.LEARNING_RATE)
@@ -61,32 +60,14 @@ print("    " + outputDir)
 # Run KFold
 for i in range(conf.KFOLD):
     # Roll the data
-    for a in conf.ACTIONS:
-        xs[a] = np.roll(xs[a], int(len(xs[a]) / conf.KFOLD), axis=0)
-        ys[a] = np.roll(ys[a], int(len(ys[a]) / conf.KFOLD), axis=0)
+    xx = np.roll(xx, int(len(xx) / conf.KFOLD), axis=0)
+    yy = np.roll(yy, int(len(yy) / conf.KFOLD), axis=0)
 
     # Data separation
-    xTrain = []
-    yTrain = []
-    xEval = []
-    yEval = []
-    for a in conf.ACTIONS:
-        if xTrain == []:
-            xTrain = xs[a][int(len(xs[a]) / conf.KFOLD):]
-        else:
-            xTrain = np.r_[xTrain, xs[a][int(len(xs[a]) / conf.KFOLD):]]
-        if yTrain == []:
-            yTrain = ys[a][int(len(ys[a]) / conf.KFOLD):]
-        else:
-            yTrain = np.r_[yTrain, ys[a][int(len(ys[a]) / conf.KFOLD):]]
-        if xEval == []:
-            xEval = xs[a][:int(len(xs[a]) / conf.KFOLD)]
-        else:
-            xEval = np.r_[xEval, xs[a][:int(len(xs[a]) / conf.KFOLD)]]
-        if yEval == []:
-            yEval = ys[a][:int(len(ys[a]) / conf.KFOLD)]
-        else:
-            yEval = np.r_[yEval, ys[a][:int(len(ys[a]) / conf.KFOLD)]]
+    xTrain = xx[int(len(xx) / conf.KFOLD):]
+    yTrain = yy[int(len(yy) / conf.KFOLD):]
+    xEval = xx[:int(len(xx) / conf.KFOLD)]
+    yEval = yy[:int(len(yy) / conf.KFOLD)]
 
     if not conf.USE_NOACTIVITY:
         # Remove NoActivity from ys
