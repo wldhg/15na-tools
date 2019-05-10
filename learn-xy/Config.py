@@ -28,7 +28,7 @@ USE_PHASE = True  # If true, learner will use phase shift
 CP_PERIOD = 32 # Checkpoint creation period
 
 ### Path ###
-SOURCES = ["try_1", "try_2", "try_6", "try_7", "try_8", "try_10"]
+SOURCES = ["try_7", "try_2", "try_6", "try_1", "try_8", "try_10"]
 
 ### Fixed Variables ###
 N_CLASSES = len(ACTIONS) + 1  # (Fixed) All actions + "No Activity"
@@ -39,7 +39,7 @@ COL_START = 1 + (USE_PHASE and not USE_AMPLITUDE) * PKT_COLUMNS  # (Fixed)
 THRESHOLD_PKT = WINDOW_SIZE * THRESHOLD / 100
 SOURCE_DIR = "./Dataset/"
 MERGED_DIR = "./Input_WINDOW{0}_COL{1}_TH{2}/"
-SOURCE_PATH = SOURCE_DIR + "{0}_{1}*.csv"
+SOURCE_PATH = SOURCE_DIR + "{0}_{1}_*.csv"
 MERGED_PATH = MERGED_DIR + "{3}_{4}.csv"
 OUTPUT_PATH = "./Output_LR{0}_BATCH{1}_GWRRATE{2}/{3}"
 LOG_PATH = "./Log_LR{0}_BATCH{1}_GWRRATE{2}/{3}"

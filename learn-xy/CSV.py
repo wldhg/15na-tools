@@ -76,7 +76,7 @@ def mergeCSV():
 
         # Calculate merges of Y
         j = 0
-        rawCSV = np.empty([0, 2], float)
+        rawCSV = np.empty([0, conf.N_CLASSES], float)
         while j < len(srcActions):
             print("Processing Y: ", srcActions[j])
 
@@ -89,7 +89,7 @@ def mergeCSV():
                     j += 1
                     break
                 else:
-                    window = np.stack(rawCSV[0:conf.WINDOW_SIZE, 1])
+                    window = rawCSV[0:conf.WINDOW_SIZE, 1]
                     yCount = np.zeros(conf.N_CLASSES)
                     for k in range(conf.WINDOW_SIZE):
                         yCount[int(window[k])] += 1
@@ -100,7 +100,7 @@ def mergeCSV():
                             yCount[k] = 0
                     if np.sum(yCount) == 0:
                         yCount[0] = 1
-                    yy = np.concatenate((yy, yCount), axis=0)
+                    yy = np.concatenate((yy, yCount[np.newaxis, ...]), axis=0)
                     rawCSV = rawCSV[conf.SLIDE_SIZE:, :]
 
             while len(yy) > (jSave + 1) * 200:
