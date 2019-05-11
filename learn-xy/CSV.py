@@ -175,13 +175,13 @@ def getCSV():
         # Load CSVs
         for mg in mgCSIs:
             print(" -- Loading:", mg)
-            if xx == None:
+            if xx is None:
                 xx = np.array(getFloatRawCSV(mg))
             else:
                 xx = np.concatenate((xx, np.array(getFloatRawCSV(mg))))
         for mg in mgActions:
             print(" -- Loading:", mg)
-            if yy == None:
+            if yy is None:
                 yy = np.array(getFloatRawCSV(mg))
             else:
                 yy = np.concatenate((yy, np.array(getFloatRawCSV(mg))))
