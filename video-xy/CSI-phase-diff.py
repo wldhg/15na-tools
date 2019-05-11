@@ -30,14 +30,14 @@ if __name__ == "__main__":
         if row[0] < avgEndTime:
             cutNx = nx[beginIdx:idx, :]
             break
-    avgAmp = np.mean(cutNx, axis=0)
+    avgPhase = np.mean(cutNx, axis=0)
     print("[4/5] Calculating differences...")
-    diffNx = np.copy(nx) - avgAmp
+    diffNx = np.copy(nx) - avgPhase
 
     # Calculate graphs
-    # HEY, BELIEVE YOUR VIRTUAL MEMORY!
-    print("[5/5] Creating graphs in cv format and save them...")
-    for i in range(0, int((nx.shape[1] - 1) / 60)):
+    print("[5/5] Creating graphs and converting to cv format...")
+    tr = int((nx.shape[1] - 1) / 60)
+    for i in range(0, tr):
         frames = []
         barIdx = 0
         gc.collect()
@@ -47,18 +47,16 @@ if __name__ == "__main__":
                 pltLegend = []
                 pltFigure = plt.figure()
                 pltImage = BytesIO()
-                pltLegend.append(str(i + 1) + ' TRP')  # Tx-Rx Pair
-                pltPlot = plt.plot(
-                    diffNx[p, (1 + 30 * i):(31 + 30 * i)],
+                pltLegend.append(str(i + 1) + 'TRP')
+                plt.plot(
+                    diffNx[p, (tr * 30 + 1 + 30 * i):(tr * 30 + 31 + 30 * i)],
                     color=('C' + str(i)),
                     figure=pltFigure
                 )
                 plt.xlabel('Subcarriers Group', figure=pltFigure)
-                plt.ylabel('Amplitude Diff [db]', figure=pltFigure)
+                plt.ylabel('Phase Shift Diff [db]', figure=pltFigure)
                 pltFigure.legend(pltLegend)
                 plt.ylim(-10, 10)
-                plt.axhspan(-2.5, 2.5, color='C' + str(i),
-                            alpha=0.3, figure=pltFigure)
                 pltFigure.savefig(pltImage, format='png')
                 plt.close(pltFigure)
                 del pltFigure
@@ -71,7 +69,7 @@ if __name__ == "__main__":
                 bar.update(barIdx)
         # Save as mp4 video
         videoName = conf.VID_NAME.format(
-            sys.argv[1][:sys.argv[1].index('.')], "ampdiff-" + str(i + 1))
+            sys.argv[1][:sys.argv[1].index('.')], "phasediff-" + str(i + 1))
         print("  -- Saving in " + videoName + " ...")
         saveVideo(videoName, frames)
         print("  -- Delete old data...")
