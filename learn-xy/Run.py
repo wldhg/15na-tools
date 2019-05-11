@@ -14,6 +14,7 @@ from DenseNet import DenseNet
 # Import & shuffle CSV data
 xx, yy = csv.getCSV()
 xx, yy = sku.shuffle(xx, yy, random_state=0)
+xx = xx[..., np.newaxis]
 
 # Setup Keras DenseNet Model (DenseNet-BC)
 nadam = ko.Nadam(lr=conf.LEARNING_RATE)
@@ -21,7 +22,7 @@ model = DenseNet(
     input_shape=(conf.WINDOW_SIZE, conf.N_COLUMNS, 1),
     dense_blocks=5,
     growth_rate=conf.N_FILTERS,
-    nb_classes=conf.N_VALID_CLASSES,
+    nb_classes=conf.USE_NOACTIVITY and conf.N_CLASSES or conf.N_VALID_CLASSES,
     dropout_rate=0.2,
     bottleneck=True,
     compression=0.5,

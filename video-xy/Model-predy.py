@@ -30,8 +30,20 @@ def createGraph(scores):
 assert len(sys.argv) == 4
 print("[1/7] Reading & Converting CSV ( " + sys.argv[1] + " ) ...")
 nx = getNx(sys.argv[1])
-mx, my = csv.mergeCSVOfAction(sys.argv[1])
-mx = mx.reshape(len(mx), conf.WINDOW_SIZE, conf.N_COLUMNS)
+nnx = np.copy(nx)
+mx = np.empty([0, conf.WINDOW_SIZE, conf.N_COLUMNS], float)
+while True:
+    if len(nx) < conf.WINDOW_SIZE:
+        break
+    else:
+        window = np.dstack(
+            nnx[0:conf.WINDOW_SIZE,
+                   conf.COL_START:conf.COL_START + conf.N_COLUMNS].T
+        )
+        mx = np.concatenate((mx, window), axis=0)
+        nnx = nnx[conf.SLIDE_SIZE:, :]
+del nnx
+mx = mx[..., np.newaxis]
 print("[2/7] Calculating necessary frames...")
 frameIdx = getNecessaryFrameIdx(nx)
 frameLen = len(frameIdx)
