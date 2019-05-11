@@ -106,7 +106,7 @@ def mergeCSV():
             while len(yy) > (jSave + 1) * 200:
                 print("Saving Y of 200 windows")
                 mergedActionPath = conf.MERGED_PATH.format(
-                    conf.WINDOW_SIZE, conf.N_COLUMNS, conf.THRESHOLD, "action", str(jSave).zfill(3))
+                    conf.WINDOW_SIZE, conf.N_COLUMNS, conf.THRESHOLD, "action", str(jSave + 1).zfill(3))
                 with open(mergedActionPath, "w") as out:
                     csv.writer(out, lineterminator="\n").writerows(
                         yy[jSave * 200:(jSave + 1) * 200])
@@ -120,7 +120,8 @@ def mergeCSV():
         mergedCSIPath = conf.MERGED_PATH.format(
             conf.WINDOW_SIZE, conf.N_COLUMNS, conf.THRESHOLD, "csi", str(iSave).zfill(3))
         with open(mergedCSIPath, "w") as out:
-            csv.writer(out, lineterminator="\n").writerows(xx[iSave * 200:])
+            csv.writer(out, lineterminator="\n").writerows(
+                xx[iSave * 200:].reshape(len(xx[iSave * 200:]), -1))
     if len(yy) % 200 > 0:
         mergedActionPath = conf.MERGED_PATH.format(
             conf.WINDOW_SIZE, conf.N_COLUMNS, conf.THRESHOLD, "action", str(jSave).zfill(3))
