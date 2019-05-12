@@ -3,8 +3,8 @@
 ### Packet Details ###
 PKT_HZ = 4700  # pps (packets-per-second)
 WINDOW_SIZE = int(PKT_HZ * 0.8)  # How many packets in one detection; depends on pps and the length of time of the action
-SLIDE_SIZE = int(WINDOW_SIZE / 10)  # Packet interval in learning (Window-making interval)
-THRESHOLD = 95  # If specific action continues after [WINDOW_SIZE * THRESHOLD / 100], that window will be recognized as that action
+SLIDE_SIZE = int(WINDOW_SIZE / 20)  # Packet interval in learning (Window-making interval)
+THRESHOLD = 85  # If specific action continues after [WINDOW_SIZE * THRESHOLD / 100], that window will be recognized as that action
 MULTIPLE_INPUT = 3  # The number of Tx of MIMO
 MULTIPLE_OUTPUT = 1  # The number of Rx of MIMO
 
@@ -16,19 +16,21 @@ CUSTOM_NOACTIVITY_NO = 0  # Index number of custom NoActivity action (0 to len(A
 
 ### Learning Parameters ###
 LEARNING_RATE = 0.002
-N_EPOCH = 512
-BATCH_SIZE = 64
+N_EPOCH = 256
+BATCH_SIZE = 16
 
 ### Learning Details ###
 KFOLD = 10  # K of K-Fold
+DNC = 10  # Divide & Conquer Learning
 N_FILTERS = 80  # Growth rate
+N_HIDDEN = 540
 DEPTH = 190  # DenseNet depth
-USE_AMPLITUDE = False  # If true, learner will use amplitude scale
-USE_PHASE = True  # If true, learner will use phase shift
-CP_PERIOD = 32 # Checkpoint creation period
+USE_AMPLITUDE = True  # If true, learner will use amplitude scale
+USE_PHASE = False  # If true, learner will use phase shift
+CP_PERIOD = 1 # Checkpoint creation period
 
 ### Path ###
-SOURCES = ["try_7", "try_2", "try_6", "try_1", "try_8", "try_10"]
+SOURCES = ["try_8", "try_10"] #"try_7", "try_2", "try_6", "try_1", 
 
 ### Fixed Variables ###
 N_CLASSES = len(ACTIONS) + 1  # (Fixed) All actions + "No Activity"
