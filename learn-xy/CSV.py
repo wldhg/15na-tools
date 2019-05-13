@@ -75,7 +75,7 @@ def mergeCSV():
 
         # Calculate merges of Y
         j = 0
-        rawCSV = np.empty([0, conf.N_CLASSES], float)
+        rawCSV = np.empty([0, 2], float)
         while j < len(srcActions):
             print("Processing Y: ", srcActions[j])
 
