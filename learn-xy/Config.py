@@ -2,9 +2,9 @@
 
 ### Packet Details ###
 PKT_HZ = 4700  # pps (packets-per-second)
-WINDOW_SIZE = int(PKT_HZ * 0.5)  # How many packets in one detection; depends on pps and the length of time of the action
-SLIDE_SIZE = int(WINDOW_SIZE / 10)  # Packet interval in learning (Window-making interval)
-THRESHOLD = 90  # If specific action continues after [WINDOW_SIZE * THRESHOLD / 100], that window will be recognized as that action
+WINDOW_SIZE = int(PKT_HZ * 0.6)  # How many packets in one detection; depends on pps and the length of time of the action
+SLIDE_SIZE = int(WINDOW_SIZE / 40)  # Packet interval in learning (Window-making interval)
+THRESHOLD = 92  # If specific action continues after [WINDOW_SIZE * THRESHOLD / 100], that window will be recognized as that action
 MULTIPLE_INPUT = 3  # The number of Tx of MIMO
 MULTIPLE_OUTPUT = 1  # The number of Rx of MIMO
 
