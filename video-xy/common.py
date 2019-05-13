@@ -13,8 +13,8 @@ import cv2
 
 ### PARAMETERS
 # NOTE: {conf.VID_FPS * conf.VID_EXPAND} must be lower than {conf.PKT_HZ}
-conf.VID_FPS = 60  # Video FPS
-conf.VID_EXPAND = 25  # Expand 1 second of data to {conf.VID_EXPAND} seconds of video
+conf.VID_FPS = 30  # Video FPS
+conf.VID_EXPAND = 4  # Expand 1 second of data to {conf.VID_EXPAND} seconds of video
 conf.VID_NAME = "{0}-{1}.mp4"  # (fixed) File name scheme
 conf.VID_CSIY_X = 480  # -y videos size (width)
 conf.VID_CSIY_Y = 320  # -y videos size (height)
@@ -31,6 +31,7 @@ def getRed(): return red
 green = np.zeros((conf.VID_CSIY_Y, conf.VID_CSIY_X, 3), np.uint8)
 green[:, :] = (79, 255, 175)
 def getGreen(): return green
+def getFPS(): return conf.VID_FPS
 
 
 ### COMMON FUNCTIONS
