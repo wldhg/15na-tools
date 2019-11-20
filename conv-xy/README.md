@@ -1,14 +1,20 @@
 # 15na Tools - `conv-xy`
 
-This make proper csv files of CSI data (x) and Y (y).\
-All results will be saved on the same directory of input file.
+CSI `.dat` to CSV / Labeling `.y` to CSV conversion tool.
 
-### Prerequisites
+All results will be saved on the same directory of input files.
 
--   MATLAB 2015 +
+### Requirement
 
-### How to use
+-   MATLAB R2015b or later
 
-1. Add `conv-xy` directory and its subdirectory to the path.
-2. Run `conv_x()` on command line and select raw CSI (`.dat`) file(s).
-3. Run `conv_y()` on command line and select converted CSI (`.csv`) file(s) and a raw y (`.y`) file.
+### How To Use
+
+1. Add this `conv-xy` directory and its subdirectory to the MATLAB path.
+2. Run `conv_x` and select CSI (`.dat`) file(s).
+3. Execute `conv_y` and select converted CSI (`.csv`) file(s) and a labeling (`.y`) file.
+
+### Post Script
+
+You may enter "packets per seconds" when you try to convert `.dat` to `.csv`.\
+This pps information is used to interpolate packet intervals.

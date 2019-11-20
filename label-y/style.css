@@ -16,7 +16,7 @@ body {
 #indicator > section {
   display: inline-block;
   margin-right: 20px;
-  min-width: 325px;
+  min-width: 16.9vw;
 }
 
 #indicator > section > span {
@@ -25,19 +25,39 @@ body {
   display: block;
 }
 
-#control, #control * {
+#control,
+#control *,
+#control-play-pause,
+#control-playback-10,
+#control-playback-25,
+#control-playback-50,
+#control-playback-100 {
   font-size: 16pt;
 }
 
-#control-set-sp, #control-start-stop {
-  margin-right: 180px;
+#control-set-sp,
+#control-start-stop,
+#control-play-pause {
+  margin-right: 9vw;
+}
+
+#control-play-pause {
+  padding: 30px 80px;
+}
+
+#control-playback-10,
+#control-playback-25,
+#control-playback-50,
+#control-playback-100 {
+  padding: 30px 40px;
 }
 
 #hidden {
   display: none;
 }
 
-#y, #y * {
+#y,
+#y * {
   font-size: 10pt;
 }
 

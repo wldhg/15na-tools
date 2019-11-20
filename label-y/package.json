@@ -1,0 +1,25 @@
+{
+  "name": "label-y",
+  "version": "1.0.0",
+  "description": "15na CSI Labeling Tool",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wldh-g/15na-tools.git"
+  },
+  "author": "wldh",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/wldh-g/15na-tools/issues"
+  },
+  "homepage": "https://github.com/wldh-g/15na-tools#readme",
+  "devDependencies": {
+    "eslint": "^6.6.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-config-jquery": "^2.0.0",
+    "eslint-plugin-import": "^2.18.2"
+  }
+}

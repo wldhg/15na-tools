@@ -3,7 +3,7 @@ The MIT License (MIT)
 
 Copyright © `2017` `Siamak Yousefi, Hirokazu Narui, Sankalp Dayal, Stefano Ermon, Shahrokh Valaee`
 
-Copyright © `2019` `Widh (Jio Gim)`
+Copyright © `2019` `wldh (Jio Gim)`
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation

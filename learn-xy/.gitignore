@@ -120,9 +120,8 @@ Dataset/
 Input_*/
 Output_*/
 Log_*/
-_study*.ipynb
+Test-*.ipynb
 Untitled*.ipynb
-Keras-Copy*.ipynb
 *.csv
 
 # VS Code

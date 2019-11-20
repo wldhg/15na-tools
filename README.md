@@ -1,22 +1,29 @@
 # 15na Tools
 
-This repository includes co-domain (of CSI data) maker, CSI `.dat` to CSV converter, CNN learner for data, and data to video converter.\
-`conv-xy` directory is partially based on [ermongroup/Wifi_Activity_Recognition](https://github.com/ermongroup/Wifi_Activity_Recognition).
+Useful tools for CSI motion model making.
 
-## **Overall Process**
+This toolset includes...
+
+- `label-y` : CSI labeling tool
+- `conv-xy` : CSI label file (`.y`) to CSV converter
+- `conv-xy` : CSI file (`.dat`) to CSV Converter
+- `learn-xy` : Machine learning Jupyter notebooks
+- `video-xy` : CSI CSV to mp4 visualization tool
+
+## Overall Process
 
 1. Record CSI data
-2. Label to CSI data using `label-y`.
-2. Convert their raw data to learnable `.csv` data using `conv-xy`.
-3. Do machine learning them using `learn-xy`.
-4. You can convert classification results to mp4 video using `video-xy`.
+2. Label to CSI data using tool in `label-y`.
+3. Convert the CSI data to learnable `.csv` data using the `conv_x` tool in `conv-xy`.
+4. Convert the label data to learnable `.csv` data using the `conv_y` tool in `conv-xy`.
+5. Do machine learning them using notebooks in `learn-xy`.
+6. *(Optional)* You can convert the classification results, the CSI CSVs to mp4 video using tools in `video-xy`.
 
-## How to use
-Please look each directories' README.
-
-#### Caution
-- `video-xy` uses configurations and data from `learn-xy`.
+## How To Use
+Please look each directories' README file.
 
 ## License
 
-All the things are MIT license.
+All the things are licensed under [MIT license](./LICENSE.md).
+
+`conv-xy` directory is partially based on [ermongroup/Wifi_Activity_Recognition](https://github.com/ermongroup/Wifi_Activity_Recognition).

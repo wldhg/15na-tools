@@ -1,22 +1,34 @@
-addpath(genpath('./Functions/'));
+addpath(genpath('./functions/'));
 
-fprintf('Select X (csv) file\n');
-[CSVFile, CSVPath] = uigetfile('*.csv','MultiSelect','on');
+fprintf('Select converted CSI file(s) (.csv)\n');
+[CSIFile, CSIPath] = uigetfile('*.csv','MultiSelect','on');
 
-fprintf('Select a Raw Y (y) file\n');
-[YFile, YPath] = uigetfile('*.y', 'MultiSelect', 'off');
+fprintf('Select labeling file(s) (.y)\n');
+[LabelFile, LabelPath] = uigetfile('*.y', 'MultiSelect', 'on');
 
-if isa(CSVFile, 'cell') % Multiple files selected\
-    CSVFile = sortrows(CSVFile');
-    for idx = 1:length(CSVFile)
-        fprintf("Processsing " + CSVFile{idx} + " & " + YFile + "... ");
-        process_y(CSVFile{idx}, CSVPath, YFile, YPath);
+if isa(CSIFile, 'cell') % Multiple files selected
+  CSIFile = sortrows(CSIFile');
+  LabelFile = sortrows(LabelFile');
+  if (length(CSIFile) == length(LabelFile))
+    for idx = 1:length(CSIFile)
+      fprintf("[Match] %s - %s\n", CSIFile{idx}, LabelFile{idx});
     end
-elseif size(CSVFile) ~= 0 & size(YFile) ~= 0 % One file selected
-    fprintf("Processing " + CSVFile + " & " + YFile + "... ");
-    process_y(CSVFile, CSVPath, YFile, YPath);
-elseif size(YFile) ~= 0
-    error('No CSV file (from .dat) is selected');
+    answ = questdlg('Check the stdout. Is the matching correct?', ...
+      'Confirm', 'No', 'Yes', 'Yes');
+    if strcmp(answ, 'No') == 1
+      error('Select again with file name order matching!');
+    else
+      for idx = 1:length(CSIFile)
+        process_y(CSIFile{idx}, CSIPath, LabelFile{idx}, LabelPath);
+      end
+    end
+  else
+    error('Select the same number of CSV and Y files.');
+  end
+elseif all(CSIFile ~= 0) && all(LabelFile ~= 0) % One file selected
+  process_y(CSIFile, CSIPath, LabelFile, LabelPath);
+elseif LabelFile ~= 0
+  error('No converted CSI file (.csv) is selected');
 else
-    error('No Y file is selected');
+  error('No labeling file (.y) is selected');
 end

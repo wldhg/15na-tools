@@ -1,45 +1,37 @@
 # Cross Validation Learner Configuration
 
 ### Packet Details ###
-PKT_HZ = 4700  # pps (packets-per-second)
-WINDOW_SIZE = int(PKT_HZ * 0.5)  # How many packets in one detection; depends on pps and the length of time of the action
-SLIDE_SIZE = int(WINDOW_SIZE / 10)  # Packet interval in learning (Window-making interval)
-THRESHOLD = 90  # If specific action continues after [WINDOW_SIZE * THRESHOLD / 100], that window will be recognized as that action
-MULTIPLE_INPUT = 3  # The number of Tx of MIMO
-MULTIPLE_OUTPUT = 1  # The number of Rx of MIMO
+WINDOW_SIZE = 0.6 # in seconds. A classification window size.
+LEARN_SLIDE_SIZE = 0.04  # in seconds. Learning window slide length.
+RECOGNITION_SIZE = 0.3  # in seconds. If an action continues more than this, the label of that window may be the action.
 
 ### Actions ###
-ACTIONS = ["fall", "run", "walk", "sitdown", "standup", "liedown"]  # Labeled number (starts from 1) must be matched with the order of this
-USE_NOACTIVITY = False  # Set "True" will include NoActivity windows in learning
-USE_CUSTOM_NOACTIVITY = False  # Custom NoActivity (Not 0)
-CUSTOM_NOACTIVITY_NO = 0  # Index number of custom NoActivity action (0 to len(ACTIONS) - 1)
+LABEL = ['sitdown']  # This have to match with label number (starts from 1)
+INCLUDE_NOACTIVITY = True  # Set "True" will include NoActivity windows in learning
 
 ### Learning Parameters ###
 LEARNING_RATE = 0.002
-N_EPOCH = 256
-BATCH_SIZE = 64
+EPOCH_CNT = 64
+BATCH_SIZE = 256
 
-### Learning Details ###
-KFOLD = 10  # K of K-Fold
-N_HIDDEN = 780  # LSTM
-USE_AMPLITUDE = True  # If true, learner will use amplitude scale
-USE_PHASE = False  # If true, learner will use phase shift
-CP_PERIOD = 1  # Checkpoint creation period
-conf.ANOA_RATIO = 3  # Activity : No Activity ratio (Only works when USE_NOACTIVITY==True)
+### Learning Configurations ###
+KFOLD = 2  # K of K-Fold
+EVAL_FREQ = 2  # Validation frequency
+CP_FREQ = 2048  # Checkpoint creation frequency. This must be a multiply of EVAL_FREQ.
 
 ### Path ###
-SOURCES = ["ca_walk", "ca_fall", "ca_run", "ca_lay", "ca_sit"]
+CSV_DIRECTORY = 'Dataset'  # Directory contains 'csi_*.csv's and 'label_*.csv's
 
-### Fixed Variables ###
-N_CLASSES = len(ACTIONS) + 1  # (Fixed) All actions + "No Activity"
-N_VALID_CLASSES = len(ACTIONS)  # (Fixed) All actions
-PKT_COLUMNS = 30 * MULTIPLE_INPUT * MULTIPLE_OUTPUT  # (Fixed) Get first {PKT_COLUMNS} columns of each packet data
-N_COLUMNS = PKT_COLUMNS * (USE_PHASE + USE_AMPLITUDE)  # (Fixed) Total number of CSI columns
-COL_START = 1 + (USE_PHASE and not USE_AMPLITUDE) * PKT_COLUMNS  # (Fixed)
-THRESHOLD_PKT = WINDOW_SIZE * THRESHOLD / 100
-SOURCE_DIR = "./Dataset/"
-MERGED_DIR = "./Input_PKT{0}_COL{1}_TH{2}/"
-SOURCE_PATH = SOURCE_DIR + "{0}_{1}_*.csv"
-MERGED_PATH = MERGED_DIR + "{3}_{4}.csv"
-OUTPUT_PATH = "./Output_LR{0}_BATCH{1}_HID{2}/{3}"
-LOG_PATH = "./Log_LR{0}_BATCH{1}_HID{2}/{3}"
+### FIXED VALUES ###
+EXCLUDE_NOACTIVITY = not INCLUDE_NOACTIVITY
+ACTION_CNT = len(LABEL) + INCLUDE_NOACTIVITY
+CSI_PATH = CSV_DIRECTORY + "/csi_*.csv"
+# CSI_PICKLE = CSV_DIRECTORY + "/csi.pckl"  # Not used yet
+LABEL_PATH = CSV_DIRECTORY + "/label_*.csv"
+# LABEL_PICKLE = CSV_DIRECTORY + "/label.pckl"  # Not used yet
+OUTPUT_DIR = "./Output_LR{0}_B{1}_K{2}_CP{3}/".format(
+  LEARNING_RATE, BATCH_SIZE, KFOLD, CP_FREQ
+)
+LOG_DIR = "./Log_LR{0}_B{1}_K{2}_CP{3}/".format(
+  LEARNING_RATE, BATCH_SIZE, KFOLD, CP_FREQ
+)

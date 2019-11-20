@@ -1,49 +1,54 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>15na Labeling Tool</title>
-    <link href="style.css" rel="stylesheet">
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-    <script src="script.js"></script>
-  </head>
-  <body>
-    <header>
-      <h1>15na Labeling Tool</h1>
-    </header>
-    <main>
-      <section id="video">
-        <video id="video-element" controls></video>
+<head>
+  <title>15na Labeling Tool</title>
+  <link href="style.css" rel="stylesheet" />
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+  <script src="script.js"></script>
+</head>
+<body>
+  <header>
+    <h1>15na Labeling Tool</h1>
+  </header>
+  <main>
+    <section id="video">
+      <video id="video-element" controls></video>
+      <br />
+      <button id="control-play-pause">Play / Pause</button>
+      <button id="control-playback-10">x0.10</button>
+      <button id="control-playback-25">x0.25</button>
+      <button id="control-playback-50">x0.50</button>
+      <button id="control-playback-100">x1.00</button>
+    </section>
+    <hr />
+    <section id="indicator">
+      <section id="indicator-ts">
+        <h4>Timestamp</h4>
+        <span id="indicator-ts-data"></span>
       </section>
-      <hr>
-      <section id="indicator">
-        <section id="indicator-ts">
-          <h4>Timestamp</h4>
-          <span id="indicator-ts-data"></span>
-        </section>
-        <section id="indicator-sp">
-          <h4>Startpoint</h4>
-          <span id="indicator-sp-data"></span>
-        </section>
-        <section id="indicator-rts">
-          <h4>Relative Timestamp</h4>
-          <span id="indicator-rts-data"></span>
-        </section>
+      <section id="indicator-sp">
+        <h4>Startpoint</h4>
+        <span id="indicator-sp-data"></span>
       </section>
-      <hr>
-      <section id="control">
-        <button id="control-load-video">Load Video</button>
-        <button id="control-set-sp">Set Startpoint</button>
-        <input id="control-label" type="number" min="1" value="1">
-        <button id="control-start-stop">Start</button>
-        <button id="control-save-y">
-          <a id="control-save-y-a" target="_blank">Save Y</a>
-        </button>
+      <section id="indicator-rts">
+        <h4>Relative Timestamp</h4>
+        <span id="indicator-rts-data"></span>
       </section>
-      <section id="y">
-      </section>
-      <section id="hidden">
-        <input id="hidden-file" type="file" accept="video/*">
-      </section>
-    </main>
-  </body>
+    </section>
+    <hr />
+    <section id="control">
+      <button id="control-load-video">Load Video</button>
+      <button id="control-set-sp">Set Startpoint</button>
+      <input id="control-label" type="number" min="1" value="1" />
+      <button id="control-start-stop">Start</button>
+      <button id="control-save-y">
+        <a id="control-save-y-a" target="_blank">Save Y</a>
+      </button>
+    </section>
+    <section id="y"></section>
+    <section id="hidden">
+      <input id="hidden-file" type="file" accept="video/*" />
+    </section>
+  </main>
+</body>
 </html>

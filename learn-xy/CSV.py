@@ -1,214 +1,122 @@
 import csv
-import gc
 import glob
-import os
-import shutil
-
+import math
 import numpy as np
-
 import Config as conf
 
-
-def getFloatRawCSV(filePath):
-    return [[float(cell) for cell in line]
-            for line in csv.reader(open(filePath, "r"))]
-
-
-def getIntRawCSV(filePath):
-    return [[int(cell) for cell in line]
-            for line in csv.reader(open(filePath, "r"))]
+def readCSV(filePath):
+  return np.asarray([
+    [float(cell) for cell in line] for line in csv.reader(open(filePath, "r"))
+  ])
 
 
-def mergeCSV():
-    # Check output directory
-    mergedDir = conf.MERGED_DIR.format(conf.WINDOW_SIZE, conf.N_COLUMNS,
-                                       conf.THRESHOLD)
-    if os.path.exists(mergedDir):
-        print("Old files found. Remove them to continue...")
-        shutil.rmtree(mergedDir)
-        while os.path.exists(mergedDir):
-            pass
-    os.makedirs(mergedDir)
+def getWindows():
+  # Read all csvs
+  csi_csvs = sorted(glob.glob(conf.CSI_PATH))
+  label_csvs = sorted(glob.glob(conf.LABEL_PATH))
+  assert len(csi_csvs) == len(label_csvs), 'The number of CSVs do not match'
 
-    # Calculate and save
-    xx = np.empty([0, conf.WINDOW_SIZE, conf.N_COLUMNS], float)
-    yy = np.empty([0, conf.N_CLASSES], float)
-    iSave = 0
-    jSave = 0
-    for src in conf.SOURCES:
-        print("Create window of " + src + " ...")
+  ocsis = []
+  olabels = []
+  pps = None
+  winCol = None
+  winRow = None
+  winSlideRow = None
+  winRecogRow = None
+  winAllRow = 0
+  labelSum = [0] * (conf.ACTION_CNT + 1)
 
-        # Specify paths
-        srcCSIs = sorted(glob.glob(conf.SOURCE_PATH.format("csi", src)))
-        srcActions = sorted(glob.glob(conf.SOURCE_PATH.format("action", src)))
+  # Read CSV files
+  for i in range(len(csi_csvs)):
+    print("Loading {} and {} ...".format(csi_csvs[i], label_csvs[i]))
+    ocsi = readCSV(csi_csvs[i])
+    olabel = readCSV(label_csvs[i])[:, 1]
+    assert ocsi.shape[0] == olabel.shape[0], 'The rows of CSI & label are different'
+    if pps == None:
+      pps = np.where(ocsi[:, 0] == 1)[0][0]
+      winCol = ocsi.shape[1] - 1
+      winRow = math.floor(conf.WINDOW_SIZE * pps)
+      winSlideRow = math.floor(conf.LEARN_SLIDE_SIZE * pps)
+      winRecogRow = math.floor(conf.RECOGNITION_SIZE * pps)
+      print(" - PPS determined: {}".format(pps))
+      print(" - COL determined: {}".format(winCol))
+      print(" - ROW determined: {}".format(winRow))
+      print(" - SLIDE determined: {}".format(winSlideRow))
+      print(" - RECOG determined: {}".format(winRecogRow))
+    winAllRow = winAllRow + 1 + math.floor((ocsi.shape[0] - winRow) / winSlideRow)
+    ocsis.append(ocsi)
+    olabels.append(olabel)
+  actCSI = np.empty([winAllRow, winRow, winCol])
+  actLabel = np.empty([winAllRow, 1])
+  actCursor = 0
+  nonactCSI = np.empty([0, winRow, winCol])
+  nonactCursor = 0
+  if conf.INCLUDE_NOACTIVITY:
+    nonactCSI = np.empty([winAllRow, winRow, winCol])
+  print('{} windows may produced at maximum.'.format(winAllRow))
 
-        # Calculate merges of X
-        i = 0
-        rawCSV = np.empty([0, 1 + conf.PKT_COLUMNS * 2], float)
-        while i < len(srcCSIs):
-            print("Processing X: ", srcCSIs[i])
-
-            # Read CSV
-            rawCSV = np.concatenate(
-                (rawCSV, np.array(getFloatRawCSV(srcCSIs[i]))), axis=0)
-
-            while True:
-                if len(rawCSV) < conf.WINDOW_SIZE:
-                    i += 1
-                    break
-                else:
-                    window = np.dstack(
-                        rawCSV[0:conf.WINDOW_SIZE,
-                               conf.COL_START:conf.COL_START + conf.N_COLUMNS].T
-                    )
-                    xx = np.concatenate((xx, window), axis=0)
-                    rawCSV = rawCSV[conf.SLIDE_SIZE:, :]
-
-            while len(xx) > (iSave + 1) * 200:
-                mergedCSIPath = conf.MERGED_PATH.format(
-                    conf.WINDOW_SIZE, conf.N_COLUMNS, conf.THRESHOLD, "csi", str(iSave + 1).zfill(3))
-                print("Saving X of 200 windows:", mergedCSIPath)
-                with open(mergedCSIPath, "w") as out:
-                    csv.writer(out, lineterminator="\n").writerows(
-                        xx[iSave * 200:(iSave + 1) * 200].reshape(200, -1))
-                iSave += 1
-
-        # Calculate merges of Y
-        j = 0
-        rawCSV = np.empty([0, conf.N_CLASSES], float)
-        while j < len(srcActions):
-            print("Processing Y: ", srcActions[j])
-
-            # Read CSV
-            rawCSV = np.concatenate(
-                (rawCSV, np.array(getFloatRawCSV(srcActions[j]))), axis=0)
-
-            while True:
-                if len(rawCSV) < conf.WINDOW_SIZE:
-                    j += 1
-                    break
-                else:
-                    window = rawCSV[0:conf.WINDOW_SIZE, 1]
-                    yCount = np.zeros(conf.N_CLASSES)
-                    for k in range(conf.WINDOW_SIZE):
-                        yCount[int(window[k])] += 1
-                    for k in range(conf.N_CLASSES):
-                        if yCount[k] >= conf.THRESHOLD_PKT:
-                            yCount[k] = 1
-                        else:
-                            yCount[k] = 0
-                    if np.sum(yCount) == 0:
-                        yCount[0] = 1
-                    yy = np.concatenate((yy, yCount[np.newaxis, ...]), axis=0)
-                    rawCSV = rawCSV[conf.SLIDE_SIZE:, :]
-
-            while len(yy) > (jSave + 1) * 200:
-                mergedActionPath = conf.MERGED_PATH.format(
-                    conf.WINDOW_SIZE, conf.N_COLUMNS, conf.THRESHOLD, "action", str(jSave + 1).zfill(3))
-                print("Saving Y of 200 windows:", mergedActionPath)
-                with open(mergedActionPath, "w") as out:
-                    csv.writer(out, lineterminator="\n").writerows(
-                        yy[jSave * 200:(jSave + 1) * 200])
-                jSave += 1
-
-        gc.collect()
-
-    # Save other all
-    print("Saving remained windows")
-    if len(xx) % 200 > 0:
-        mergedCSIPath = conf.MERGED_PATH.format(
-            conf.WINDOW_SIZE, conf.N_COLUMNS, conf.THRESHOLD, "csi", str(iSave + 1).zfill(3))
-        print("Saving X of", len(xx[iSave * 200:]), "windows:", mergedCSIPath)
-        with open(mergedCSIPath, "w") as out:
-            csv.writer(out, lineterminator="\n").writerows(
-                xx[iSave * 200:].reshape(len(xx[iSave * 200:]), -1))
-    if len(yy) % 200 > 0:
-        mergedActionPath = conf.MERGED_PATH.format(
-            conf.WINDOW_SIZE, conf.N_COLUMNS, conf.THRESHOLD, "action", str(jSave + 1).zfill(3))
-        print("Saving Y of", len(yy[jSave * 200:]), "windows:", mergedActionPath)
-        with open(mergedActionPath, "w") as out:
-            csv.writer(out, lineterminator="\n").writerows(
-                yy[jSave * 200:])
-
-    # Print the results
-    print("Shape notice: [xx]", xx.shape, "[yy]", yy.shape)
-
-    return xx, yy
-
-
-def getCSV():
-    # Check whether if input directory exists
-    if not os.path.exists(
-            conf.MERGED_DIR.format(conf.WINDOW_SIZE, conf.N_COLUMNS,
-                                   conf.THRESHOLD)):
-        print("-- Input directory not found. Calculate merged CSVs...")
-        xx, yy = mergeCSV()
-        print("Calculation finished!")
-        print("CSV data automatically imported from cache.")
-
-        if not conf.USE_NOACTIVITY:
-            print(" -- Eliminating No-Activity windows")
-            rows, cols = np.where(yy > 0)
-            xx = np.delete(xx,
-                           rows[np.where(cols == 0)], 0)
-            yy = np.delete(yy,
-                           rows[np.where(cols == 0)], 0)
-            print(" -- Finished")
+  # Really create window!
+  for i in range(len(csi_csvs)):
+    print("Creating windows from {} and {} ...".format(csi_csvs[i], label_csvs[i]))
+    ocsi = ocsis[i]
+    olabel = olabels[i]
+    for j in range(1 + math.floor((ocsi.shape[0] - winRow) / winSlideRow)):
+      startRow = j * winSlideRow
+      partialLabelSum = np.zeros((conf.ACTION_CNT + 1), dtype=int)
+      for k in range(startRow, startRow + winRow):
+        labelPos = int(olabel[k])
+        partialLabelSum[labelPos] = partialLabelSum[labelPos] + 1
+      recogLabel = np.argmax((partialLabelSum - winRecogRow)[1:])
+      if partialLabelSum[recogLabel + 1] - winRecogRow >= 0:
+        actCSI[actCursor, :, :] = ocsi[startRow:(startRow + winRow), 1:]
+        if conf.EXCLUDE_NOACTIVITY:
+          actLabel[actCursor] = recogLabel
+          labelSum[recogLabel] = labelSum[recogLabel] + 1
         else:
-            print(" -- Using No-Activity window.")
+          actLabel[actCursor] = recogLabel + 1
+          labelSum[recogLabel + 1] = labelSum[recogLabel + 1] + 1
+        actCursor = actCursor + 1
+      else:
+        if conf.INCLUDE_NOACTIVITY:
+          nonactCSI[nonactCursor, :, :] = ocsi[startRow:(startRow + winRow), 1:]
+          nonactCursor = nonactCursor + 1
+          labelSum[0] = labelSum[0] + 1
+        elif conf.EXCLUDE_NOACTIVITY:
+          pass
 
-        print("Converted and Loaded CSVs.")
-        gc.collect()
+  # Remove some nonactivity windows
+  for i in range(int(conf.INCLUDE_NOACTIVITY), conf.ACTION_CNT):
+    print("Windows for {} is {}.".format(
+      conf.LABEL[i - conf.INCLUDE_NOACTIVITY],
+      labelSum[i]
+    ))
+  if conf.INCLUDE_NOACTIVITY:
+    print("Windows for NOACT is {}.".format(nonactCursor))
+    noActivityCountMax = math.floor(actCursor * 1.2) + 10
+    nonactCSI = nonactCSI[:nonactCursor]
+    if noActivityCountMax < nonactCursor:
+      np.random.shuffle(nonactCSI)
+      nonactCSI = nonactCSI[:noActivityCountMax]
+      print("Windows for NOACT is reduced to {}.".format(noActivityCountMax))
 
-        return xx, yy
+  # Finalize CSIs
+  print("Finally gathering windows...")
+  fcsi = np.empty([nonactCSI.shape[0] + actCursor, winRow, winCol])
+  flabel = np.empty([nonactCSI.shape[0] + actCursor, conf.ACTION_CNT])
+  eye = np.eye(conf.ACTION_CNT)
+  for i in range(actCursor):
+    fcsi[i, :, :] = actCSI[i, :, :]
+    flabel[i, :] = eye[int(actLabel[i])]
+  if conf.INCLUDE_NOACTIVITY:
+    for i in range(nonactCSI.shape[0]):
+      fcsi[actCursor + i, :, :] = nonactCSI[i, :, :]
+      flabel[actCursor + i, :] = eye[0]
 
-    else:
-        print("Importing CSV files...")
+  print("Shape notice: [csi]", fcsi.shape, "[label]", flabel.shape)
+  print("Completed!")
 
-        # Specify paths
-        mgCSIs = sorted(glob.glob(conf.MERGED_PATH.format(
-            conf.WINDOW_SIZE, conf.N_COLUMNS, conf.THRESHOLD, 'csi', '*')))
-        mgActions = sorted(glob.glob(conf.MERGED_PATH.format(
-            conf.WINDOW_SIZE, conf.N_COLUMNS, conf.THRESHOLD, 'action', '*')))
-
-        xx = None
-        yy = None
-
-        # Load CSVs
-        for mg in mgCSIs:
-            print(" -- Loading:", mg)
-            if xx is None:
-                xx = np.array(getFloatRawCSV(mg))
-            else:
-                xx = np.concatenate((xx, np.array(getFloatRawCSV(mg))))
-        for mg in mgActions:
-            print(" -- Loading:", mg)
-            if yy is None:
-                yy = np.array(getFloatRawCSV(mg))
-            else:
-                yy = np.concatenate((yy, np.array(getFloatRawCSV(mg))))
-
-        # Reshape them
-        print(" -- Reshaping xx ...")
-        xx = xx.reshape(len(xx), conf.WINDOW_SIZE, conf.N_COLUMNS)
-        print(" -- Shape notice: [xx]", xx.shape, "[yy]", yy.shape)
-
-        if not conf.USE_NOACTIVITY:
-            print(" -- Eliminating No-Activity windows")
-            rows, cols = np.where(yy > 0)
-            xx = np.delete(xx,
-                           rows[np.where(cols == 0)], 0)
-            yy = np.delete(yy,
-                           rows[np.where(cols == 0)], 0)
-            print(" -- Finished")
-        else:
-            print(" -- Using No-Activity window.")
-
-        print("Loaded CSVs")
-        gc.collect()
-
-        return xx, yy
+  return fcsi, flabel, [winRow, winCol]
 
 
 if __name__ == "__main__":
-    mergeCSV()
+  getWindows()
