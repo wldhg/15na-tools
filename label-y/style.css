@@ -37,9 +37,12 @@ label,
     color: #bcbcbc;
 }
 
-a {
+:not(:disabled) > a {
     color: black;
-    text-decoration: none;
+}
+
+a {
+  text-decoration: none;
 }
 
 #video-name {

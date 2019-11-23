@@ -117,14 +117,15 @@ $(document).ready(() => {
   });
   $("#control-save-y-a").click(() => {
 
-    $("#control-save-y-a").attr(
-      "download",
-      `${vidName.substring(0, vidName.lastIndexOf('.'))}.y`
-    ).
-      attr(
+    if (!document.getElementById('control-save-y').disabled) {
+      $("#control-save-y-a").attr(
+        "download",
+        `${vidName.substring(0, vidName.lastIndexOf('.'))}.y`
+      ).attr(
         "href",
         `data:application/octet-stream;base64,${btoa(text)}`
       );
+    }
 
   });
   let isPlay = false;
