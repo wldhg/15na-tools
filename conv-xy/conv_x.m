@@ -2,7 +2,7 @@ addpath(genpath('./functions/'));
 
 % Configure
 conf = inputdlg( ...
-  {'Packets per seconds:', 'Select Tx antenna(s) [1-3]:', 'Select Rx antenna(s) [1-3]:', 'Process target [amp|phase|amphase]:'}, ...
+  {'Packets per seconds:', 'Select Tx antenna(s) [1|2|3]:', 'Select Rx antenna(s) [1|2|3]:', 'Process target [amp|phase|amphase]:'}, ...
   'Conversion Configuration', ...
   [1 35], ...
   {'200', '1', '1', 'amp'});
@@ -29,15 +29,15 @@ else
   disp(rxSplit);
 end
 
-if strcmp(conf{4}, 'amp') == 0
+if strcmp(conf{4}, 'amp') == 1
   procAmp = true;
   procPhase = false;
   fprintf('[CONFIG] proc=amp\n\n');
-elseif strcmp(conf{4}, 'phase') == 0
+elseif strcmp(conf{4}, 'phase') == 1
   procAmp = false;
   procPhase = true;
   fprintf('[CONFIG] proc=phase\n\n');
-elseif strcmp(conf{4}, 'amphase') == 0
+elseif strcmp(conf{4}, 'amphase') == 1
   procAmp = true;
   procPhase = true;
   fprintf('[CONFIG] proc=amp,phase\n\n');
@@ -51,10 +51,10 @@ end
 % Start processing
 if isa(File, 'cell') % Multiple files selected
   for idx = 1:length(File)
-    process_dat(File{idx}, Path, pps, txSplit, rxSplit, procAmp, procPhase);
+    process_dat(File{idx}, Path, pps, txSplit, rxSplit, procAmp, procPhase, conf{4});
   end
 elseif File ~= 0 % One file selected
-  process_dat(File, Path, pps, txSplit, rxSplit, procAmp, procPhase);
+  process_dat(File, Path, pps, txSplit, rxSplit, procAmp, procPhase, conf{4});
 else
   error('No file is selected. Conversion canceled.');
 end

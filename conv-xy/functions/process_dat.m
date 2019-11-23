@@ -1,4 +1,4 @@
-function process_dat(fn, pn, pps, txSplit, rxSplit, procAmp, procPhase)
+function process_dat(fn, pn, pps, txSplit, rxSplit, procAmp, procPhase, procString)
 fprintf('Starts to convert a DAT file!\n');
 
 proc = 1;
@@ -40,9 +40,18 @@ fprintf('OK!\n');
 % Scaled into linear
 proc = proc + 1;
 fprintf('[%d] Scaling into linear... ', proc);
-for pidx = 1:length(raw_data)
+ocsi(1,:,:,:) = get_scaled_csi(raw_data{1});
+zero_timestamp = raw_data{1}.timestamp_low;
+addi_timestamp = 0;
+timestamp(1) = 0;
+for pidx = 2:length(raw_data)
   ocsi(pidx,:,:,:) = get_scaled_csi(raw_data{pidx});
-  timestamp(pidx) = (raw_data{pidx}.timestamp_low - raw_data{1}.timestamp_low) * 1.0e-6;
+  if raw_data{pidx}.timestamp_low < raw_data{pidx - 1}.timestamp_low
+    % Timestamp Reset
+    addi_timestamp = addi_timestamp + raw_data{pidx - 1} - zero_timestamp;
+    zero_timestamp = 0;
+  end
+  timestamp(pidx) = (raw_data{pidx}.timestamp_low - zero_timestamp + addi_timestamp) * 1.0e-6;
 end
 fprintf('OK!\n');
 
@@ -188,7 +197,7 @@ fprintf('OK!\n');
 % Save CSV
 proc = proc + 1;
 fprintf('[%d] Saving in CSV... ', proc);
-spath = [char(pn), 'csi_', char(strrep(fn, '.dat', '')), '.csv'];
+spath = [char(pn), 'csi_', char(strrep(fn, '.dat', '')), '_', num2str(pps), '_', num2str(ltx), 'x', num2str(lrx), '_', procString, '.csv'];
 dlmwrite(spath, horzcat(interpolated_timestamp', ret), 'delimiter', ',', 'precision', 8);
 fprintf('OK! (%d bytes)\n', dir(spath).bytes);
 fprintf('Successfully converted to CSV.\n');
