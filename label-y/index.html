@@ -9,12 +9,14 @@
 <body>
   <header>
     <h1>15na Labeling Tool</h1>
+    <span id="video-name"></span>
+    <span id="video-pbrate">Click "Load Video" button</span>
   </header>
   <main>
     <section id="video">
       <video id="video-element" controls></video>
       <br />
-      <button id="control-play-pause">Play / Pause</button>
+      <button id="control-play-pause" disabled>Play</button>
       <button id="control-playback-10">x0.10</button>
       <button id="control-playback-25">x0.25</button>
       <button id="control-playback-50">x0.50</button>
@@ -38,13 +40,17 @@
     <hr />
     <section id="control">
       <button id="control-load-video">Load Video</button>
-      <button id="control-set-sp">Set Startpoint</button>
+      <button id="control-set-sp" disabled>Set Startpoint</button>
+      <label for="control-label">Label</label>
       <input id="control-label" type="number" min="1" value="1" />
-      <button id="control-start-stop">Start</button>
-      <button id="control-save-y">
+      <button id="control-start" disabled>Start</button>
+      <button id="control-stop" disabled>Stop</button>
+      <button id="control-undo" disabled>Undo</button>
+      <button id="control-save-y" disabled>
         <a id="control-save-y-a" target="_blank">Save Y</a>
       </button>
     </section>
+    <h4>Y Raw</h4>
     <section id="y"></section>
     <section id="hidden">
       <input id="hidden-file" type="file" accept="video/*" />

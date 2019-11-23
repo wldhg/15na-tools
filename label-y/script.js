@@ -5,14 +5,14 @@ $(document).ready(() => {
   const tsData = $("#indicator-ts-data")[0],
     rtsData = $("#indicator-rts-data")[0],
     spData = $("#indicator-sp-data")[0],
-    ssBtn = $("#control-start-stop")[0],
     ssLbl = $("#control-label")[0],
     secY = $("#y")[0],
     videoElement = $("#video-element")[0];
   let labelSp = 0,
     labelStarted = false,
     text = "",
-    vidName = "";
+    vidName = "",
+    videoLoaded = false;
   const updateTs = (t) => {
 
     ts = t;
@@ -23,7 +23,11 @@ $(document).ready(() => {
 
   $("#control-load-video").click(() => {
 
-    $("#hidden-file").trigger("click");
+    if (!videoLoaded) {
+      $("#hidden-file").trigger("click");
+    } else if (confirm("Really reset all?")) {
+      location.reload();
+    }
 
     return false;
 
@@ -43,12 +47,12 @@ $(document).ready(() => {
     );
     sp = 0;
     ts = 0;
+    videoLoaded = true;
     labelStarted = false;
     labelSp = 0;
     tsData.textContent = "0";
     rtsData.textContent = "SP Unset";
     spData.textContent = "Unset";
-    ssBtn.textContent = "Start";
     text = "";
     secY.innerHTML = "";
     vidName = e.target.files[0].name;
@@ -62,8 +66,15 @@ $(document).ready(() => {
       }
     );
 
+    $("#control-play-pause").attr('disabled', false);
+    $("#control-set-sp").attr('disabled', false);
+    $("#control-start").attr('disabled', false);
+    $("#control-load-video").text("Reset All");
+    $("#video-name").text(vidName);
+    $("#video-pbrate").text("x0.50");
+
   });
-  $("#control-start-stop").click(() => {
+  const procSS = () => {
 
     if (labelStarted) {
 
@@ -71,23 +82,44 @@ $(document).ready(() => {
 
       text += `${tempData}\n`;
       secY.innerHTML += `<span>${tempData}</span>`;
-      ssBtn.textContent = "Start";
       labelStarted = false;
+      $("#control-undo").attr('disabled', false);
+      $("#control-save-y").attr('disabled', false);
 
     } else {
 
       labelSp = (Number(ts) - Number(sp)).toFixed(6);
-      ssBtn.textContent = "Stop";
       labelStarted = true;
 
     }
 
+  };
+  $("#control-start").click(() => {
+    procSS();
+    $("#control-stop").attr('disabled', false);
+    $("#control-start").attr('disabled', true);
+  });
+  $("#control-stop").click(() => {
+    procSS();
+    $("#control-start").attr('disabled', false);
+    $("#control-stop").attr('disabled', true);
+  });
+  $("#control-undo").click(() => {
+    if (text.length > 0) {
+      text = text.substring(0, text.lastIndexOf('\n'));
+      text = text.substring(0, text.lastIndexOf('\n') + 1);
+      secY.removeChild(secY.lastChild);
+      if (text.length === 0) {
+        $("#control-undo").attr('disabled', true);
+        $("#control-save-y").attr('disabled', true);
+      }
+    }
   });
   $("#control-save-y-a").click(() => {
 
     $("#control-save-y-a").attr(
       "download",
-      `${vidName}.y`
+      `${vidName.substring(0, vidName.lastIndexOf('.'))}.y`
     ).
       attr(
         "href",
@@ -97,15 +129,18 @@ $(document).ready(() => {
   });
   let isPlay = false;
 
-  $("#control-play-pause").click(() => {
+  const cpp = $("#control-play-pause");
+  cpp.click(() => {
 
     if (isPlay) {
 
       videoElement.pause();
+      cpp.text("Play");
 
     } else {
 
       videoElement.play();
+      cpp.text("Pause");
 
     }
     isPlay = !isPlay;
@@ -114,21 +149,25 @@ $(document).ready(() => {
   $("#control-playback-10").click(() => {
 
     videoElement.playbackRate = 0.1;
+    $("#video-pbrate").text("x0.10");
 
   });
   $("#control-playback-25").click(() => {
 
     videoElement.playbackRate = 0.25;
+    $("#video-pbrate").text("x0.25");
 
   });
   $("#control-playback-50").click(() => {
 
     videoElement.playbackRate = 0.5;
+    $("#video-pbrate").text("x0.50");
 
   });
   $("#control-playback-100").click(() => {
 
     videoElement.playbackRate = 1;
+    $("#video-pbrate").text("x1.00");
 
   });
 

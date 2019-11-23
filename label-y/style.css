@@ -1,28 +1,72 @@
 html {
-  background-color: #222;
-  color: #eee;
+    background-color: #1a1a1a;
+    color: #ebebeb;
 }
 
 body {
-  margin: 1em;
+    margin: 1em;
+}
+
+button:not(:disabled) {
+    cursor: pointer;
+}
+
+header > * {
+    display: inline-block;
+}
+
+header,
+h4,
+#video,
+#indicator,
+#control {
+    user-select: none;
+}
+
+h1 {
+    margin: 0 40px 0 0;
+}
+
+h4 {
+    margin: 0 0 10px 0;
+}
+
+h4,
+label,
+#video-pbrate {
+    color: #bcbcbc;
+}
+
+a {
+    color: black;
+    text-decoration: none;
+}
+
+#video-name {
+    margin-right: 10px;
 }
 
 #video-element {
-  /* 16:9 */
-  width: auto;
-  height: calc(56.25vh - 1.125em);
+    /* 16:9 */
+    width: auto;
+    height: calc(56.25vh - 1.125em);
+    margin-top: 15px;
 }
 
 #indicator > section {
-  display: inline-block;
-  margin-right: 20px;
-  min-width: 16.9vw;
+    display: inline-block;
+    margin-right: 20px;
+    min-width: 16.9vw;
 }
 
 #indicator > section > span {
-  font-size: 20pt;
-  min-height: 32pt;
-  display: block;
+    font-size: 20pt;
+    min-height: 32pt;
+    display: block;
+}
+
+#control {
+    margin-bottom: 10px;
 }
 
 #control,
@@ -32,38 +76,43 @@ body {
 #control-playback-25,
 #control-playback-50,
 #control-playback-100 {
-  font-size: 16pt;
+    font-size: 16pt;
 }
 
 #control-set-sp,
-#control-start-stop,
+#control-stop,
 #control-play-pause {
-  margin-right: 9vw;
+    margin-right: 4.5vw;
 }
 
 #control-play-pause {
-  padding: 30px 80px;
+    padding: 20px 0;
+    width: 210px;
 }
 
 #control-playback-10,
 #control-playback-25,
 #control-playback-50,
 #control-playback-100 {
-  padding: 30px 40px;
+    padding: 20px 40px;
+}
+
+#control-label {
+    width: 50px;
 }
 
 #hidden {
-  display: none;
+    display: none;
 }
 
 #y,
 #y * {
-  font-size: 10pt;
+    font-size: 10pt;
 }
 
 #y span {
-  display: inline-block;
-  padding-right: 1px solid #888;
-  padding-right: 20px;
-  margin-right: 20px;
+    display: inline-block;
+    padding-right: 1px solid #888;
+    padding-right: 20px;
+    margin-right: 20px;
 }
