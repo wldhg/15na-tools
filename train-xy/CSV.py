@@ -120,8 +120,8 @@ def getWindows():
     labelString = ['NoAct'] + labelString
     if not conf.NOACTIVITY_AUTO:
       labelString.pop(conf.NOACTIVITY_LABEL)
-  print("Label notice:", labelString)
-  print("Shape notice: [csi]", fcsi.shape, "[label]", flabel.shape)
+  print("Label String Notice:", labelString)
+  print("Shape Notice: [csi]", fcsi.shape, "[label]", flabel.shape)
   print("Completed!")
 
   return fcsi, flabel, [winRow, winCol]

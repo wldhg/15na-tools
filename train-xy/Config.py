@@ -17,13 +17,9 @@ NOACTIVITY = 'noise'
 
 ### Learning Parameters ###
 LEARNING_RATE = 0.002
-EPOCH_CNT = 64
-BATCH_SIZE = 256
-
-### Learning Configurations ###
-KFOLD = 5  # K of K-Fold
-EVAL_FREQ = 2  # Validation frequency
-CP_FREQ = 2048  # Checkpoint creation frequency. This must be a multiply of EVAL_FREQ.
+EPOCH_CNT = 32
+BATCH_SIZE = 512
+KFOLD = 10  # K of K-Fold
 
 ### Path ###
 CSV_DIRECTORY = 'Dataset'  # Directory contains 'csi_*.csv's and 'label_*.csv's
@@ -44,9 +40,9 @@ CSI_PATH = CSV_DIRECTORY + "/csi_*.csv"
 # CSI_PICKLE = CSV_DIRECTORY + "/csi.pckl"  # Not used yet
 LABEL_PATH = CSV_DIRECTORY + "/label_*.csv"
 # LABEL_PICKLE = CSV_DIRECTORY + "/label.pckl"  # Not used yet
-OUTPUT_DIR = "./Output_LR{0}_B{1}_K{2}_CP{3}/".format(
-  LEARNING_RATE, BATCH_SIZE, KFOLD, CP_FREQ
+OUTPUT_DIR = "./Output_{0}_LR{1}_B{2}_K{3}/".format(
+  "{0}", LEARNING_RATE, BATCH_SIZE, KFOLD,
 )
-LOG_DIR = "./Log_LR{0}_B{1}_K{2}_CP{3}/".format(
-  LEARNING_RATE, BATCH_SIZE, KFOLD, CP_FREQ
+LOG_DIR = "./Log_{0}_LR{1}_B{2}_K{3}/".format(
+  "{0}", LEARNING_RATE, BATCH_SIZE, KFOLD,
 )
