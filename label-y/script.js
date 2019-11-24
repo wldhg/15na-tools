@@ -81,7 +81,7 @@ $(document).ready(() => {
       const tempData = `${ssLbl.value},${labelSp},${(Number(ts) - Number(sp)).toFixed(6)}`;
 
       text += `${tempData}\n`;
-      secY.innerHTML += `<span>${tempData}</span>`;
+      secY.lastChild.outerHTML = `<span>${tempData}</span>`;
       labelStarted = false;
       $("#control-undo").attr('disabled', false);
       $("#control-save-y").attr('disabled', false);
@@ -90,6 +90,11 @@ $(document).ready(() => {
 
       labelSp = (Number(ts) - Number(sp)).toFixed(6);
       labelStarted = true;
+
+      const tempData = `${ssLbl.value},${labelSp},[WaitForStop]`;
+      secY.innerHTML += `<span style="opacity: 0.5">${tempData}</span>`;
+      $("#control-undo").attr('disabled', true);
+      $("#control-save-y").attr('disabled', true);
 
     }
 
