@@ -3,11 +3,11 @@
 ### Packet Details ###
 WINDOW_SIZE = 0.6 # in seconds. A classification window size.
 LEARN_SLIDE_SIZE = 0.005  # in seconds. Learning window slide length.
-RECOGNITION_SIZE = 0.45  # in seconds. If an action continues more than this, the label of that window may be the action.
+RECOGNITION_SIZE = 0.5  # in seconds. If an action continues more than this, the label of that window may be the action.
 
 ### Actions ###
 # This have to match with label number (starts from 1)
-LABEL = ['fall_a', 'fall_b', 'fall_c', 'fall_d', 'noise']
+LABEL = ['fall_a', 'fall_b', 'fall_c', 'fall_d', 'noise', 'lay_static']
 
 ### No Activity (Noise) ###
 # Set this "auto" makes NoActivity windows to be included automatically.
@@ -21,7 +21,7 @@ EPOCH_CNT = 64
 BATCH_SIZE = 256
 
 ### Learning Configurations ###
-KFOLD = 10  # K of K-Fold
+KFOLD = 5  # K of K-Fold
 EVAL_FREQ = 2  # Validation frequency
 CP_FREQ = 2048  # Checkpoint creation frequency. This must be a multiply of EVAL_FREQ.
 

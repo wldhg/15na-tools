@@ -85,8 +85,10 @@ def getWindows():
         pass
 
   # Remove some nonactivity windows
-  for i in range(int(conf.USE_NOACTIVITY), conf.ACTION_CNT):
+  labelConv = {}
+  for i in range(int(conf.USE_NOACTIVITY), len(conf.LABEL) + 1):
     if i != conf.NOACTIVITY_LABEL:
+      labelConv[i] = len(labelConv) + 1
       print("Windows for {} is {}.".format(
         conf.LABEL[i - 1],
         labelSum[i - conf.EXCLUDE_NOACTIVITY]
@@ -107,7 +109,7 @@ def getWindows():
   eye = np.eye(conf.ACTION_CNT)
   for i in range(actCursor):
     fcsi[i, :, :] = actCSI[i, :, :]
-    flabel[i, :] = eye[int(actLabel[i])]
+    flabel[i, :] = eye[labelConv[int(actLabel[i])]]
   if conf.USE_NOACTIVITY:
     for i in range(nonactCSI.shape[0]):
       fcsi[actCursor + i, :, :] = nonactCSI[i, :, :]
