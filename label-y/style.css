@@ -41,6 +41,10 @@ label,
     color: black;
 }
 
+:disabled, :disabled a {
+    color: #484848;
+}
+
 a {
   text-decoration: none;
 }
