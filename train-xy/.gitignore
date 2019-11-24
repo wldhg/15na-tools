@@ -120,7 +120,6 @@ Dataset/
 Input_*/
 Output_*/
 Log_*/
-Test-*.ipynb
 Untitled*.ipynb
 *.csv
 
