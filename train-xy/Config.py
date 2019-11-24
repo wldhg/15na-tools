@@ -2,7 +2,7 @@
 
 ### Packet Details ###
 WINDOW_SIZE = 0.6 # in seconds. A classification window size.
-LEARN_SLIDE_SIZE = 0.01  # in seconds. Learning window slide length.
+LEARN_SLIDE_SIZE = 0.005  # in seconds. Learning window slide length.
 RECOGNITION_SIZE = 0.45  # in seconds. If an action continues more than this, the label of that window may be the action.
 
 ### Actions ###
