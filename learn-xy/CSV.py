@@ -51,7 +51,7 @@ def getWindows():
   actCursor = 0
   nonactCSI = np.empty([0, winRow, winCol])
   nonactCursor = 0
-  if conf.INCLUDE_NOACTIVITY:
+  if conf.USE_NOACTIVITY:
     nonactCSI = np.empty([winAllRow, winRow, winCol])
   print('{} windows may produced at maximum.'.format(winAllRow))
 
@@ -67,7 +67,7 @@ def getWindows():
         labelPos = int(olabel[k])
         partialLabelSum[labelPos] = partialLabelSum[labelPos] + 1
       recogLabel = np.argmax((partialLabelSum - winRecogRow)[1:])
-      if partialLabelSum[recogLabel + 1] - winRecogRow >= 0:
+      if (partialLabelSum[recogLabel + 1] - winRecogRow >= 0) and (conf.NOACTIVITY_LABEL != (recogLabel + 1)):
         actCSI[actCursor, :, :] = ocsi[startRow:(startRow + winRow), 1:]
         if conf.EXCLUDE_NOACTIVITY:
           actLabel[actCursor] = recogLabel
@@ -76,28 +76,29 @@ def getWindows():
           actLabel[actCursor] = recogLabel + 1
           labelSum[recogLabel + 1] = labelSum[recogLabel + 1] + 1
         actCursor = actCursor + 1
-      else:
-        if conf.INCLUDE_NOACTIVITY:
-          nonactCSI[nonactCursor, :, :] = ocsi[startRow:(startRow + winRow), 1:]
-          nonactCursor = nonactCursor + 1
-          labelSum[0] = labelSum[0] + 1
-        elif conf.EXCLUDE_NOACTIVITY:
-          pass
+      elif conf.USE_NOACTIVITY and (
+        conf.NOACTIVITY_AUTO or conf.NOACTIVITY_LABEL == recogLabel + 1):
+        nonactCSI[nonactCursor, :, :] = ocsi[startRow:(startRow + winRow), 1:]
+        nonactCursor = nonactCursor + 1
+        labelSum[0] = labelSum[0] + 1
+      elif conf.EXCLUDE_NOACTIVITY:
+        pass
 
   # Remove some nonactivity windows
-  for i in range(int(conf.INCLUDE_NOACTIVITY), conf.ACTION_CNT):
-    print("Windows for {} is {}.".format(
-      conf.LABEL[i - conf.INCLUDE_NOACTIVITY],
-      labelSum[i]
-    ))
-  if conf.INCLUDE_NOACTIVITY:
-    print("Windows for NOACT is {}.".format(nonactCursor))
-    noActivityCountMax = math.floor(actCursor * 1.2) + 10
+  for i in range(int(conf.USE_NOACTIVITY), conf.ACTION_CNT):
+    if i != conf.NOACTIVITY_LABEL:
+      print("Windows for {} is {}.".format(
+        conf.LABEL[i - 1],
+        labelSum[i - conf.EXCLUDE_NOACTIVITY]
+      ))
+  if conf.USE_NOACTIVITY:
+    print("Windows for NoAct is {}.".format(nonactCursor))
+    noActivityCountMax = math.floor((actCursor / (len(conf.LABEL) - (not conf.NOACTIVITY_AUTO))) * 1.2) + 10
     nonactCSI = nonactCSI[:nonactCursor]
     if noActivityCountMax < nonactCursor:
       np.random.shuffle(nonactCSI)
       nonactCSI = nonactCSI[:noActivityCountMax]
-      print("Windows for NOACT is reduced to {}.".format(noActivityCountMax))
+      print("Windows for NoAct is reduced to {}.".format(noActivityCountMax))
 
   # Finalize CSIs
   print("Finally gathering windows...")
@@ -107,11 +108,17 @@ def getWindows():
   for i in range(actCursor):
     fcsi[i, :, :] = actCSI[i, :, :]
     flabel[i, :] = eye[int(actLabel[i])]
-  if conf.INCLUDE_NOACTIVITY:
+  if conf.USE_NOACTIVITY:
     for i in range(nonactCSI.shape[0]):
       fcsi[actCursor + i, :, :] = nonactCSI[i, :, :]
       flabel[actCursor + i, :] = eye[0]
 
+  labelString = conf.LABEL
+  if conf.USE_NOACTIVITY:
+    labelString = ['NoAct'] + labelString
+    if not conf.NOACTIVITY_AUTO:
+      labelString.pop(conf.NOACTIVITY_LABEL)
+  print("Label notice:", labelString)
   print("Shape notice: [csi]", fcsi.shape, "[label]", flabel.shape)
   print("Completed!")
 
