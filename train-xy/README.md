@@ -22,3 +22,9 @@ This works on **Python 3**
 4. After learning, `Output_LR..._...` directory may be created and keras checkpoint file may be in there.
 5. Also, `model.h5`, `model.yml`, `model.json` will be in there.
 6. **Profit!** Use these in your way.
+
+### Information
+
+- I used `Double_LSTM` model.
+- Some recent papers of Wi-Fi HAR used CNN, but my CNN model is not effective yet.
+- If you found any better model, PR is always open.

@@ -95,7 +95,9 @@ def getWindows():
       ))
   if conf.USE_NOACTIVITY:
     print("Windows for NoAct is {}.".format(nonactCursor))
-    noActivityCountMax = math.floor((actCursor / (len(conf.LABEL) - (not conf.NOACTIVITY_AUTO))) * 1.2) + 10
+    noActivityCountMax = nonactCursor
+    if conf.NOACTIVITY_RATIO != None:
+      noActivityCountMax = math.floor((actCursor / (len(conf.LABEL) - (not conf.NOACTIVITY_AUTO))) * 1.2) + 10
     nonactCSI = nonactCSI[:nonactCursor]
     if noActivityCountMax < nonactCursor:
       np.random.shuffle(nonactCSI)
