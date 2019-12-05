@@ -48,12 +48,12 @@ for pidx = 2:length(raw_data)
   ocsi(pidx,:,:,:) = get_scaled_csi(raw_data{pidx});
   if raw_data{pidx}.timestamp_low < raw_data{pidx - 1}.timestamp_low
     % Timestamp Reset
-    addi_timestamp = addi_timestamp + raw_data{pidx - 1} - zero_timestamp;
+    addi_timestamp = addi_timestamp + raw_data{pidx - 1}.timestamp_low - zero_timestamp;
     zero_timestamp = 0;
   end
   timestamp(pidx) = (raw_data{pidx}.timestamp_low - zero_timestamp + addi_timestamp) * 1.0e-6;
 end
-fprintf('OK!\n');
+fprintf('OK! (%4f seconds)\n', timestamp(length(timestamp)));
 
 % Consider uniqueness
 proc = proc + 1;
