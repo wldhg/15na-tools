@@ -11,7 +11,7 @@ RECOGNITION_SIZE = 0.5
 
 ### Actions ###
 # This have to match with label number (starts from 1)
-LABEL = ['fall', 'wake', 'floor', 'noise', 'walk_a', 'walk_b', 'lay']
+LABEL = ['noise', 'fall', 'floor', 'walk_a', 'walk_b', 'lay', 'wake']
 
 ### No Activity (Noise) ###
 # Set this "auto" makes NoActivity windows to be included automatically.
@@ -21,7 +21,7 @@ NOACTIVITY = 'noise'
 # Set this None make training include all noises.
 # Or set this to a float number value to set the ratio of noactivity window
 # as "AVERAGE COUNT OF WINDOWS OF ALL ACTIVITY LABELS" * NONACTIVITY_RATIO.
-NOACTIVITY_RATIO = None
+NOACTIVITY_RATIO = 9.4
 
 ### Learning Parameters ###
 LEARNING_RATE = 0.002
