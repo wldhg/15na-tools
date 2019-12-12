@@ -1,13 +1,22 @@
-function process_dat(fn, pn, pps, txSplit, rxSplit, procAmp, procPhase, procString)
+function ret = process_dat( ...
+  fn, pn, pps, txSplit, rxSplit, procAmp, procPhase, procString, ...
+  wannaFileSave, putData, redData, ...
+  use_hampel, hampel_k, hampel_sigma, ...
+  use_sgolay, sgolay_order, sgolay_framelen_amp, sgolay_framelen_phase )
 fprintf('Starts to convert a DAT file!\n');
 
 proc = 1;
-fprintf("[%d] Reading %s ... ", proc, fn);
-raw_data = read_bf_file(strcat(pn, fn));
+if ~(putData)
+  fprintf("[%d] Reading %s ... ", proc, fn);
+  raw_data = read_bf_file(strcat(pn, fn));
 
-% Eliminate empty cell
-empty_cells = cellfun('isempty', raw_data);
-raw_data(empty_cells) = [];
+  % Eliminate empty cell
+  empty_cells = cellfun('isempty', raw_data);
+  raw_data(empty_cells) = [];
+else
+  fprintf("[%d] Reading data ... ", proc);
+  raw_data = redData;
+end
 
 % Extract CSI information for each packet
 if ~isempty(raw_data)
@@ -83,15 +92,19 @@ if (procAmp)
   csi_amp = zeros(ltx, lrx, 30, lpkt);
   fprintf('OK!\n');
   proc = proc + 1;
-  fprintf('[%d] Applying Hampel filter to amplitude... ', proc);
+  fprintf('[%d] Reshaping & filtering amplitude... ', proc);
   for t = 1:ltx
     for r = 1:lrx
       for ch = 1:30
-        csi_amp(t, r, ch, :) = ...
-          interp1(timestamp, hampel( ...
-          reshape(ocsi_amp(t, r, ch, :), [1, length(uni)]), ...
-          6, 1.6 ), ...
-          interpolated_timestamp );
+        filtered_amp = interp1(timestamp, ...
+          reshape(ocsi_amp(t, r, ch, :), [1, length(uni)]), interpolated_timestamp);
+        if (use_hampel)
+          filtered_amp = hampel(filtered_amp, hampel_k, hampel_sigma);
+        end
+        if (use_sgolay)
+          filtered_amp = sgolayfilt(filtered_amp, sgolay_order, sgolay_framelen_amp);
+        end
+        csi_amp(t, r, ch, :) = filtered_amp;
       end
     end
   end
@@ -105,14 +118,21 @@ if (procPhase)
   csi_phase = zeros(ltx, lrx, 30, lpkt);
   fprintf('OK!\n');
   proc = proc + 1;
-  fprintf('[%d] Calibrating phase... ', proc);
+  fprintf('[%d] Calibrating & filtering phase... ', proc);
   for k = 1:ltx
     for m = 1:lrx
       for j = 1:length(uni)
         partial_phase(:, j) = phase_calibration(ocsi_phase(k, m, :, j));
       end
       for ch = 1:30
-        csi_phase(k, m, ch, :) = interp1(timestamp, partial_phase(ch, :), interpolated_timestamp);
+        filtered_phase = interp1(timestamp, partial_phase(ch, :), interpolated_timestamp);
+        if (use_hampel)
+          filtered_phase = hampel(filtered_phase, hampel_k, hampel_sigma);
+        end
+        if (use_sgolay)
+          filtered_phase = sgolayfilt(filtered_phase, sgolay_order, sgolay_framelen_phase);
+        end
+        csi_phase(k, m, ch, :) = filtered_phase;
       end
     end
   end
@@ -196,9 +216,16 @@ fprintf('OK!\n');
 
 % Save CSV
 proc = proc + 1;
-fprintf('[%d] Saving in CSV... ', proc);
-spath = [char(pn), 'csi_', char(strrep(fn, '.dat', '')), '_', num2str(pps), '_', num2str(ltx), 'x', num2str(lrx), '_', procString, '.csv'];
-dlmwrite(spath, horzcat(interpolated_timestamp', ret), 'delimiter', ',', 'precision', 8);
-fprintf('OK! (%d bytes)\n', dir(spath).bytes);
+if (wannaFileSave)
+  fprintf('[%d] Final: Saving in CSV... ', proc);
+  spath = [char(pn), 'csi_', char(strrep(fn, '.dat', '')), '_', num2str(pps), '_', num2str(ltx), 'x', num2str(lrx), '_', procString, '.csv'];
+  dlmwrite(spath, horzcat(interpolated_timestamp', ret), 'delimiter', ',', 'precision', 8);
+  sdir = dir(spath);
+  fprintf('OK! (%d bytes)\n', sdir.bytes);
+else
+  fprintf('[%d] Final: Concatenating timestamp and csi... ', proc);
+  ret = horzcat(interpolated_timestamp', ret);
+  fprintf('OK!\n');
+end
 fprintf('Successfully converted to CSV.\n');
 end
