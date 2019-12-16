@@ -45,19 +45,6 @@ else
   error('Wrong process target setting: ' + conf{4});
 end
 
-% Autoconfig filter configs
-hampel_k = floor(pps * 0.09);
-hampel_sigma = 3;
-sgolay_order = 3 + floor(pps / 300);
-sgolay_frame_amp = floor(pps * 0.09);
-sgolay_frame_phase = floor(pps * 0.11);
-if (mod(sgolay_frame_amp, 2) == 0)
-  sgolay_frame_amp = sgolay_frame_amp + 1;
-end
-if (mod(sgolay_frame_phase, 2) == 0)
-  sgolay_frame_phase = sgolay_frame_phase + 1;
-end
-
 % Select files
 [File, Path] = uigetfile('*.dat','MultiSelect','on');
 
@@ -67,15 +54,15 @@ if isa(File, 'cell') % Multiple files selected
     process_dat( ...
       File{idx}, Path, pps, txSplit, rxSplit, procAmp, procPhase, conf{4}, ...
       true, false, null, ...
-      true, hampel_k, hampel_sigma, ...
-      true, sgolay_order, sgolay_frame_amp, sgolay_frame_phase );
+      false, 0, 0, ...
+      false, 0, 0, 0 );
   end
 elseif File ~= 0 % One file selected
   process_dat( ...
     File, Path, pps, txSplit, rxSplit, procAmp, procPhase, conf{4}, ...
     true, false, null, ...
-    true, hampel_k, hampel_sigma, ...
-    true, sgolay_order, sgolay_frame_amp, sgolay_frame_phase );
+    false, 0, 0, ...
+    false, 0, 0, 0 );
 else
   error('No file is selected. Conversion canceled.');
 end
