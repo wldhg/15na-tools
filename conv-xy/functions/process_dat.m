@@ -121,11 +121,8 @@ if (procPhase)
   fprintf('[%d] Calibrating & filtering phase... ', proc);
   for k = 1:ltx
     for m = 1:lrx
-      for j = 1:length(uni)
-        partial_phase(:, j) = phase_calibration(ocsi_phase(k, m, :, j));
-      end
       for ch = 1:30
-        filtered_phase = interp1(timestamp, partial_phase(ch, :), interpolated_timestamp);
+        filtered_phase = interp1(timestamp, ocsi_phase(k, m, ch, :), interpolated_timestamp);
         if (use_hampel)
           filtered_phase = hampel(filtered_phase, hampel_k, hampel_sigma);
         end
