@@ -1,6 +1,6 @@
 # 15na Tools
 
-Useful tools for CSI motion model making.
+Useful tools for CSI motion model making, works with [D. Halperin's CSITool](https://github.com/dhalperi/linux-80211n-csitool).
 
 This toolset includes...
 
